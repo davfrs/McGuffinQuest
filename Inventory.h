@@ -58,9 +58,12 @@ namespace Inventory {
 		bool merge(ConsumableItem& other);
 		virtual bool mergeable(const ConsumableItem& other) = 0;
 		inline int getCount() const { return count; }
+		inline void setCount(int count) { this->count = count; }
 		virtual bool _use() {}
 		bool attemptUse();
 		friend virtual ostream& operator<<(ostream& out, ConsumableItem& item) { return out << item.getName() << " ("+item.count+')'; }
+
+		virtual ConsumableItem& makeCopy() const = 0;
 	};
 	class ConsumableItem_Lambda :public ConsumableItem {
 		function<bool()> useFunction;
@@ -69,6 +72,7 @@ namespace Inventory {
 		ConsumableItem_Lambda(function<bool()> useFunction, string name, int count) :ConsumableItem(name, count), useFunction(useFunction) { }
 		virtual bool _use() { return this->useFunction(); }
 		virtual bool mergeable(const ConsumableItem& other);
+		virtual ConsumableItem& makeCopy() const { return ConsumableItem_Lambda(this->useFunction, this->getName()); }
 	};
 	template<typename T>
 	class Reference {
