@@ -2,7 +2,7 @@
 //Offers a complete suite of map stuff.
 
 #ifndef DUNGEONBYTES
-	#include <DungeonBytes.h>
+	#include "dungeonbytes.h"
 #endif
 
 #ifndef MAP_X_SIZE
@@ -21,7 +21,7 @@
 
 struct COORDINATE {
 	int XCo, YCo;
-}
+};
 
 class Map {
 	unsigned char dungeon[MAP_X_SIZE][MAP_Y_SIZE][MAP_Z_SIZE];
@@ -31,7 +31,7 @@ class Map {
 	//"HP: NN / XX" however is 11. So therefore absolute max width is 68 (due to needing a padding space)
 	//And the inventory design could be simply like
 	//ItemName (vertical), I forget how we were doing it.
-	void generateLevel(int dLv);
+	bool generateLevel(int dLv);
 
 	int revealSquare(int Xsp, int Ysp, int Zsp) {
 		if ( (dungeon[Xsp][Ysp][Zsp] & UNSEEN_TILE) == UNSEEN_TILE )
@@ -43,7 +43,11 @@ class Map {
 	int getTilePlayer(int Xsp, int Ysp, int Zsp) {
 		
 	};
-}
+
+	bool isSquareRevealed(int x, int y, int z) {
+		return (dungeon[x][y][z] & UNSEEN_TILE) == UNSEEN_TILE;
+	}
+};
 
 //Returns false if generation failed.
 bool Map::generateLevel(int dLv) {
@@ -64,11 +68,11 @@ bool Map::generateLevel(int dLv) {
 	else {
 		dungeon[PD.XCo][PD.YCo][dLv] = GOALPOINT | UNSEEN_TILE; }
 	dungeon[PU.XCo][PU.YCo][dLv] = GO_HIGHER;
-	cX = PU.XCo; cY = PU.YCo
+	auto cX = PU.XCo; auto cY = PU.YCo;
 	while (!connect) {
 		if (cX == PD.XCo && cY == PD.YCo)
 			connect = true; //we made it~
-		else (cX != PU.XCo && cY != PU.YCo) {
+		else {//(cX != PU.XCo || cY != PU.YCo)
 			//we didn't make it yet, so set old point to floor-type and move a space.
 			dungeon[cX][cY][dLv] = FLOOR;
 			t = rand() % 4;
@@ -83,8 +87,7 @@ bool Map::generateLevel(int dLv) {
 				if (cY == -1) { cY = MAP_Y_SIZE - 1; }
 				if (cX == MAP_X_SIZE) { cX = 0; }
 				if (cY == MAP_Y_SIZE) { cY = 0; }
-			#endif
-			#ifndef WRAPPING_LEVELS
+			#else
 				if (cX == -1) { cX = 0; }
 				if (cY == -1) { cY = 0; }
 				if (cX == MAP_X_SIZE) { cX = MAP_X_SIZE - 1; }
