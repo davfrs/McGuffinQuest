@@ -19,9 +19,10 @@ namespace Inventory {
 	bool ConsumableItem_Lambda::mergeable(const ConsumableItem& other) {
 		try {
 			const ConsumableItem_Lambda& o2 = dynamic_cast<const ConsumableItem_Lambda&>(other);
-			return this->useFunction.target == o2.useFunction.target;
+			//return this->useFunction.target == o2.useFunction.target;
+			return this->getName() == o2.getName();
 		}
-		catch (std::bad_cast& e) {
+		catch (std::bad_cast&){
 			return false;
 		}
 	}
@@ -51,22 +52,23 @@ namespace Inventory {
 		this->money -= money;
 		return 0;
 	}
-	vector<Item&> Inventory::addAsPossible(vector<Item&> items) {
-		vector<Item&> faileds;
+	vector<reference_wrapper<Item>> Inventory::addAsPossible(vector<reference_wrapper<Item>> items) {
+		vector<reference_wrapper<Item>> faileds;
 		for (Item& each : items) {
 			ItemType type = each.getType();
 			switch (type) {
-			case ItemType::Money:
+			case ItemType::Money:{
 				MoneyItem& moneyItem = dynamic_cast<MoneyItem&> (each);
 				unsigned long worth = moneyItem.getWorth();
 				unsigned long remaining = this->addMoney(worth);
 				if (remaining == 0) {
 
 				} else {
-					faileds.push_back(MoneyItem(remaining));
+					Item& money = MoneyItem(remaining);
+					faileds.push_back(money);
 				}
-				break;
-			case ItemType::StackableConsumable:
+				break;}
+			case ItemType::StackableConsumable:{
 				ConsumableItem& consumableItem = dynamic_cast<ConsumableItem&> (each);
 				bool nadded = true;
 				for (ConsumableItem& e : this->consumables) {
@@ -83,8 +85,8 @@ namespace Inventory {
 						faileds.push_back(each);
 					}
 				}
-				break;
-			case ItemType::Weapon:
+				break;}
+			case ItemType::Weapon:{
 				WeaponItem& weapon = dynamic_cast<WeaponItem&>(each);
 				if (this->currentWeapon == nullptr) {
 					this->currentWeapon = new Reference<WeaponItem>(weapon);
@@ -96,8 +98,8 @@ namespace Inventory {
 						faileds.push_back(each);
 					}
 				}
-				break;
-			case ItemType::Armor:
+				break;}
+			case ItemType::Armor:{
 				ArmorItem& armor = dynamic_cast<ArmorItem&>(each);
 				if (this->currentArmor == nullptr) {
 					this->currentArmor = new Reference<ArmorItem>(armor);
@@ -109,13 +111,13 @@ namespace Inventory {
 						faileds.push_back(each);
 					}
 				}
-				break;
+				break;}
 			}
 		}
 		return faileds;
 	}
 	bool Inventory::swapActiveArmor(int armorNumber) {
-		if (this->otherArmors.size() <= armorNumber || armorNumber < 0)
+		if (this->otherArmors.size() <= (unsigned)armorNumber || armorNumber < 0)
 			return false;
 		if (this->currentArmor == nullptr) {
 			this->currentArmor = new Reference<ArmorItem>(this->otherArmors[armorNumber]);
@@ -131,7 +133,7 @@ namespace Inventory {
 		return true;
 	}
 	bool Inventory::swapActiveWeapon(int weaponNumber) {
-		if (this->otherWeapons.size() <= weaponNumber || weaponNumber < 0)
+		if (this->otherWeapons.size() <= (unsigned)weaponNumber || weaponNumber < 0)
 			return false;
 		if (this->currentWeapon == nullptr) {
 			this->currentWeapon = new Reference<WeaponItem>(this->otherWeapons[weaponNumber]);
@@ -147,10 +149,10 @@ namespace Inventory {
 		return true;
 	}
 	AttemptedUseStates Inventory::useConsumable(int consumableNumber) {
-		if (this->consumables.size() <= consumableNumber || consumableNumber < 0)
+		if (this->consumables.size() <= (unsigned)consumableNumber || consumableNumber < 0)
 			return AttemptedUseStates::DoesNotExist;
-		if (this->consumables[consumableNumber].attemptUse()) {
-			if (this->consumables[consumableNumber].getCount() <= 0) {
+		if (this->consumables[consumableNumber].get().attemptUse()) {
+			if (this->consumables[consumableNumber].get().getCount() <= 0) {
 				this->consumables.erase(this->consumables.begin() + consumableNumber);
 			}
 			return AttemptedUseStates::Used;
