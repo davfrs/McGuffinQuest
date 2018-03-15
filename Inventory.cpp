@@ -14,24 +14,18 @@ namespace Inventory {
 				return true;
 		return false;
 	}
-	
-
-	bool ConsumableItem_Lambda::mergeable(const ConsumableItem& other) {
-		try {
-			const ConsumableItem_Lambda& o2 = dynamic_cast<const ConsumableItem_Lambda&>(other);
-			//return this->useFunction.target == o2.useFunction.target;
-			return this->getName() == o2.getName();
-		}
-		catch (std::bad_cast&){
-			return false;
-		}
-	}
 
 	Inventory::~Inventory() {
 		if (currentWeapon != nullptr)
 			delete currentWeapon;
 		if (currentArmor != nullptr)
 			delete currentArmor;
+		for (Reference<WeaponItem>* e : this->otherWeapons)
+			delete e;
+		for (Reference<ArmorItem>* e : this->otherArmors)
+			delete e;
+		for (Reference<ConsumableItem>* e : this->consumables)
+			delete e;
 	}
 	unsigned long Inventory::addMoney(unsigned long money) {
 		unsigned long temp = this->money + money;
@@ -52,26 +46,27 @@ namespace Inventory {
 		this->money -= money;
 		return 0;
 	}
-	vector<reference_wrapper<Item>> Inventory::addAsPossible(vector<reference_wrapper<Item>> items) {
-		vector<reference_wrapper<Item>> faileds;
-		for (Item& each : items) {
-			ItemType type = each.getType();
+	vector<shared_ptr<Item>> Inventory::addAsPossible(vector<shared_ptr<Item>> items) {
+		vector<shared_ptr<Item>> faileds;
+		for (shared_ptr<Item> each : items) {
+			ItemType type = each->getType();
 			switch (type) {
 			case ItemType::Money:{
-				MoneyItem& moneyItem = dynamic_cast<MoneyItem&> (each);
+				MoneyItem& moneyItem = dynamic_cast<MoneyItem&> (*each);
 				unsigned long worth = moneyItem.getWorth();
 				unsigned long remaining = this->addMoney(worth);
 				if (remaining == 0) {
 
 				} else {
-					Item& money = MoneyItem(remaining);
-					faileds.push_back(money);
+					//shared_ptr<Item> money);
+					faileds.push_back(make_shared<Item>(MoneyItem(remaining)));
 				}
 				break;}
 			case ItemType::StackableConsumable:{
-				ConsumableItem& consumableItem = dynamic_cast<ConsumableItem&> (each);
+				ConsumableItem& consumableItem = dynamic_cast<ConsumableItem&> (*each);
 				bool nadded = true;
-				for (ConsumableItem& e : this->consumables) {
+				for (Reference<ConsumableItem>* et : this->consumables) {
+					ConsumableItem& e = et->get();
 					if (e.merge(consumableItem)) {
 						nadded = false;
 						break;
@@ -80,33 +75,33 @@ namespace Inventory {
 				if (nadded) {
 					if (this->inventoryLimit > this->currentInventoryCount) {
 						this->currentInventoryCount++;
-						this->consumables.push_back(consumableItem);
+						this->consumables.push_back(new Reference<ConsumableItem>(consumableItem));
 					} else {
 						faileds.push_back(each);
 					}
 				}
 				break;}
 			case ItemType::Weapon:{
-				WeaponItem& weapon = dynamic_cast<WeaponItem&>(each);
+				WeaponItem& weapon = dynamic_cast<WeaponItem&>(*each);
 				if (this->currentWeapon == nullptr) {
 					this->currentWeapon = new Reference<WeaponItem>(weapon);
 				} else {
 					if (inventoryLimit > currentInventoryCount) {
 						this->currentInventoryCount++;
-						this->otherWeapons.push_back(weapon);
+						this->otherWeapons.push_back(new Reference<WeaponItem>(weapon));
 					} else {
 						faileds.push_back(each);
 					}
 				}
 				break;}
 			case ItemType::Armor:{
-				ArmorItem& armor = dynamic_cast<ArmorItem&>(each);
+				ArmorItem& armor = dynamic_cast<ArmorItem&>(*each);
 				if (this->currentArmor == nullptr) {
 					this->currentArmor = new Reference<ArmorItem>(armor);
 				} else {
 					if (inventoryLimit > currentInventoryCount) {
 						this->currentInventoryCount++;
-						this->otherArmors.push_back(armor);
+						this->otherArmors.push_back(new Reference<ArmorItem>(armor));
 					} else {
 						faileds.push_back(each);
 					}
@@ -120,15 +115,12 @@ namespace Inventory {
 		if (this->otherArmors.size() <= (unsigned)armorNumber || armorNumber < 0)
 			return false;
 		if (this->currentArmor == nullptr) {
-			this->currentArmor = new Reference<ArmorItem>(this->otherArmors[armorNumber]);
+			this->currentArmor = this->otherArmors[armorNumber];
 			this->otherArmors.erase(this->otherArmors.begin() + armorNumber);
 		} else {
-			ArmorItem& temp = this->otherArmors[armorNumber];
-			this->otherArmors.erase(this->otherArmors.begin() + armorNumber);
-			this->otherArmors.push_back(this->currentArmor->get());
-			delete this->currentArmor;
-			this->currentArmor = new Reference<ArmorItem>(temp);
-
+			Reference<ArmorItem>* temp = this->otherArmors[armorNumber];
+			this->otherArmors[armorNumber] = this->currentArmor;
+			this->currentArmor = temp;
 		}
 		return true;
 	}
@@ -136,23 +128,22 @@ namespace Inventory {
 		if (this->otherWeapons.size() <= (unsigned)weaponNumber || weaponNumber < 0)
 			return false;
 		if (this->currentWeapon == nullptr) {
-			this->currentWeapon = new Reference<WeaponItem>(this->otherWeapons[weaponNumber]);
+			this->currentWeapon = this->otherWeapons[weaponNumber];
 			this->otherWeapons.erase(this->otherWeapons.begin() + weaponNumber);
 		}
 		else {
-			WeaponItem& temp = this->otherWeapons[weaponNumber];
-			this->otherWeapons.erase(this->otherWeapons.begin() + weaponNumber);
-			this->otherWeapons.push_back(this->currentWeapon->get());
-			delete this->currentWeapon;
-			this->currentWeapon = new Reference<WeaponItem>(temp);
+			Reference<WeaponItem>* temp = this->otherWeapons[weaponNumber];
+			this->otherWeapons[weaponNumber] = this->currentWeapon;
+			this->currentWeapon = temp;
 		}
 		return true;
 	}
 	AttemptedUseStates Inventory::useConsumable(int consumableNumber) {
 		if (this->consumables.size() <= (unsigned)consumableNumber || consumableNumber < 0)
 			return AttemptedUseStates::DoesNotExist;
-		if (this->consumables[consumableNumber].get().attemptUse()) {
-			if (this->consumables[consumableNumber].get().getCount() <= 0) {
+		ConsumableItem& consumable = this->consumables[consumableNumber]->get();
+		if (consumable.attemptUse()) {
+			if (consumable.getCount() <= 0) {
 				this->consumables.erase(this->consumables.begin() + consumableNumber);
 			}
 			return AttemptedUseStates::Used;
@@ -201,8 +192,8 @@ namespace Inventory {
 			out << "no active weapon" << endl;
 		}
 		out << "Other Weapons:" << endl;
-		for (WeaponItem& each : this->getOtherWeapons()) {
-			out << each << endl;
+		for (Reference<WeaponItem>* each : this->getOtherWeapons()) {
+			out << each->get() << endl;
 		}
 	}
 	void Inventory::printArmors(ostream& out) const {
@@ -213,13 +204,13 @@ namespace Inventory {
 			out << "no active armor" << endl;
 		}
 		out << "Other Armors:" << endl;
-		for (ArmorItem& each : this->getOtherArmors()) {
-			out << each << endl;
+		for (Reference<ArmorItem>* each : this->getOtherArmors()) {
+			out << each->get() << endl;
 		}
 	}
 	void Inventory::printConsumables(ostream& out) const {
-		for (ConsumableItem& each : this->getConsumables()) {
-			out << each << endl;
+		for (Reference<ConsumableItem>* each : this->getConsumables()) {
+			out << each->get() << endl;
 		}
 	}
 }

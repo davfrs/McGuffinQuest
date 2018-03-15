@@ -1,9 +1,9 @@
 //Terrain.h
 //Offers a complete suite of map stuff.
 
-#ifndef DUNGEONBYTES
+#ifndef TERRAIN
+	#define TERRAIN
 	#include "dungeonbytes.h"
-#endif
 
 #ifndef MAP_X_SIZE
 	#define MAP_X_SIZE 64
@@ -25,6 +25,7 @@ struct COORDINATE {
 class COORDINATE3 {
 	int x, y, z;
 public:
+	COORDINATE3() {}
 	COORDINATE3(int x, int y, int z) : x(x), y(y), z(z) {
 #ifdef WRAPPING_LEVELS
 		this->fixWrapping();
@@ -84,6 +85,9 @@ public:
 
 	bool isSquareRevealed(COORDINATE3 coord) {
 		return (dungeon[coord.X()][coord.Y()][coord.Z()] & UNSEEN_TILE) == UNSEEN_TILE;
+	}
+	int revealSquare(COORDINATE3 coord) {
+		return revealSquare(coord.X(), coord.Y(), coord.Z());
 	}
 };
 
@@ -156,7 +160,8 @@ bool Map::generateLevel(int dLv) {
 			}
 		}
 	}
+	return true;
 }
 
-
+#endif
 

@@ -1,4 +1,4 @@
-#pragma once
+//#pragma once
 
 #ifndef INVENTORY
 #define INVENTORY
@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include <memory>
 
 namespace Inventory
 {
@@ -24,7 +25,8 @@ namespace Inventory
 	protected:
 		Item(ItemType type, string displayName) :type(type), displayName(displayName) {}
 	public:
-		Item(const Item&) = delete;
+		Item(const Item& copy) :displayName(copy.displayName), type(copy.type) {}
+		Item(Item&&) = default;
 		virtual ~Item() {};
 		inline ItemType getType() const { return type; }
 		inline const string getName() const { return displayName; }
@@ -52,17 +54,20 @@ namespace Inventory
 	class ConsumableItem : public Item {
 		int count;
 	public:
-		ConsumableItem(string name) : ConsumableItem(name, 1) {}
+		ConsumableItem(string name) : ConsumableItem(name, 1) { }
 		ConsumableItem(string name, int count) :Item(ItemType::StackableConsumable, name), count(count) { }
+		ConsumableItem(const ConsumableItem& copy) : Item(copy), count(copy.count) {}
+		ConsumableItem(ConsumableItem&&) = default;
 		/**Returns true if the two ConsumableItem(s) can (and have been) merge.
 		 * If the two are merged, the Consumable 'this' contains the merged items.
 		 */
 		bool merge(ConsumableItem& other);
-		virtual bool mergeable(const ConsumableItem& other) = 0;
+		virtual bool mergeable(const ConsumableItem& other) { return this->getName() == other.getName(); }
 		inline int getCount() const { return count; }
 		virtual bool _use() {}
 		bool attemptUse();
 		virtual ostream& print(ostream& out) { return out << this->getName() << " ("+this->count+')'; }
+		virtual shared_ptr<ConsumableItem> clone();// { return make_shared<ConsumableItem>(ConsumableItem(*this)); }
 	};
 	class ConsumableItem_Lambda :public ConsumableItem {
 		function<bool()> useFunction;
@@ -70,7 +75,7 @@ namespace Inventory
 		ConsumableItem_Lambda(function<bool()> useFunction, string name) :ConsumableItem(name), useFunction(useFunction) { }
 		ConsumableItem_Lambda(function<bool()> useFunction, string name, int count) :ConsumableItem(name, count), useFunction(useFunction) { }
 		virtual bool _use() { return this->useFunction(); }
-		virtual bool mergeable(const ConsumableItem& other);
+		virtual shared_ptr<ConsumableItem> clone() { return make_shared<ConsumableItem>(ConsumableItem_Lambda(*this)); }
 	};
 	template<typename T>
 	class Reference {
@@ -80,6 +85,7 @@ namespace Inventory
 		Reference(T& v) :v(v) {}
 		~Reference() {}
 		T& get() { return this->v; }
+		T& operator()() { return this->v; }
 	};
 	enum AttemptedUseStates {
 		Used,
@@ -91,9 +97,9 @@ namespace Inventory
 		Reference<WeaponItem>* currentWeapon = nullptr;
 		Reference<ArmorItem>* currentArmor = nullptr;
 
-		vector<reference_wrapper<ConsumableItem>> consumables;
-		vector<reference_wrapper<WeaponItem>> otherWeapons;
-		vector<reference_wrapper<ArmorItem>> otherArmors;
+		vector<Reference<ConsumableItem>*> consumables;
+		vector<Reference<WeaponItem>*> otherWeapons;
+		vector<Reference<ArmorItem>*> otherArmors;
 		int inventoryLimit;
 		int currentInventoryCount;
 	public:
@@ -106,14 +112,15 @@ namespace Inventory
 		/**Returns the amount of money that was not possible to remove form the inventory.
 		 */
 		unsigned long removeMoney(unsigned long money);
-		vector<reference_wrapper<Item>> addAsPossible(vector<reference_wrapper<Item>> items);
+		vector<shared_ptr<Item>> addAsPossible(vector<shared_ptr<Item>> items);
 		bool swapActiveArmor(int armorNumber);
 		bool swapActiveWeapon(int weaponNumber);
 		AttemptedUseStates useConsumable(int consumableNumber);
 		
-		const vector<reference_wrapper<ConsumableItem>> getConsumables()const { return this->consumables; }
-		const vector<reference_wrapper<WeaponItem>> getOtherWeapons()const { return this->otherWeapons; }
-		const vector<reference_wrapper<ArmorItem>> getOtherArmors()const { return this->otherArmors; }
+		const vector<Reference<ConsumableItem>*> getConsumables()const { return this->consumables; }
+		const vector<Reference<WeaponItem>*> getOtherWeapons()const { return this->otherWeapons; }
+		const vector<Reference<ArmorItem>*> getOtherArmors()const { return this->otherArmors; }
+
 		bool  hasActiveWeapon()const { return this->currentWeapon != nullptr; }
 		const WeaponItem& getCurrentWeapon()const { return this->currentWeapon->get(); }
 		WeaponItem& removeCurrentWeapon();

@@ -7,16 +7,15 @@
 #include <map>
 #include "Inventory.h"
 using namespace std;
-using MapSCI = map<const string, reference_wrapper<Inventory::ConsumableItem>>;
+using MapSCI = map<const string, shared_ptr<Inventory::ConsumableItem>>;
 
 const string TORCHNAME("torch");
 
-template<typename Game>//as a workaround for both Game and Consumables using one another
-class Consumables : MapSCI {
-public:
-	Consumables(Game& game);
-	virtual ~Consumables() {}
 
+class Consumables : public MapSCI {
+public:
+	Consumables() : MapSCI() {}
+	shared_ptr<Inventory::ConsumableItem>& getAndCopy(const string name) { return this->find(name)->second.get()->clone(); }
 };
 
 #endif

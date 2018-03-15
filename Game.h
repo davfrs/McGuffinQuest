@@ -19,11 +19,12 @@ public:
 
 
 	Consumables* allConsumables;
-	Game() : player(), map(){
-		allConsumables = new Consumables();
+	Game() : player(), map(), allConsumables(nullptr){
+		
 	}
-	~Game() {
-		delete allConsumables;
+	virtual ~Game() {
+		if (allConsumables)
+			delete allConsumables;
 	}
 };
 
