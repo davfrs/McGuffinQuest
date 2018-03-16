@@ -16,11 +16,13 @@ class Graphics
 {
 private:
     Map map{};
+
     void redrawMap();
+
+    std::string printInventory(int line);
 
 public:
     void show(VIEW view);
-
 };
 
 #endif //PROJECT_GRAPHICS_H

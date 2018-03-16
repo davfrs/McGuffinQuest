@@ -20,7 +20,8 @@ enum DIMENSIONS
 
 struct COORDINATE2
 {
-    int XCo, YCo;
+    int XCo;
+    int YCo;
 };
 
 class COORDINATE3
@@ -75,6 +76,7 @@ public:
     {
 #ifdef WRAPPING_LEVELS
         return true;
+
 #else
         return this->x < MAP_X_SIZE && this->x > -1 &&
                this->y < MAP_Y_SIZE && this->y > -1 &&
@@ -93,7 +95,7 @@ class Map
     //"HP: NN / XX" however is 11. So therefore absolute max width is 68 (due to needing a padding space)
     //And the inventory design could be simply like
     //ItemName (vertical), I forget how we were doing it.
-    bool generateLevel(int dLv);
+    bool generateLevel(int depth);
 
 public:
     Map()

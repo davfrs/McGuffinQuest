@@ -15,6 +15,4 @@ int main()
         this_thread::sleep_for(chrono::seconds(1));
     }
 
-    cout << "Press enter to exit.";
-    while (cin.get() != '\n');
 }
