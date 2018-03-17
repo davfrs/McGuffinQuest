@@ -110,16 +110,21 @@ public:
             dungeon[Xsp][Ysp][Zsp] = dungeon[Xsp][Ysp][Zsp] ^ UNSEEN_TILE;
         //strip unseen tile bit
         return dungeon[Xsp][Ysp][Zsp];
-    };
+    }
 
     int getTilePlayer(int Xsp, int Ysp, int Zsp)
     {
-    };
+    }
 
     bool isSquareRevealed(COORDINATE3 coord)
     {
         return (dungeon[coord.X()][coord.Y()][coord.Z()] & UNSEEN_TILE) == UNSEEN_TILE;
     }
+
+	int revealSquare_Coord3(COORDINATE3 coord)
+	{
+		return revealSquare(coord.X(), coord.Y(), coord.Z());
+	}
 
     COORDINATE3 playerLocation() {
         // TODO: keep track of player's location

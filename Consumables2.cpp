@@ -6,12 +6,11 @@ bool torchLogic(Game& game) {
 	COORDINATE3 location(game.player.location);
 	Map map = game.map;
 	bool activated = false;
-	COORDINATE3 t;
 
-	t = location.incrementX();
+	COORDINATE3 t = location.incrementX();
 	if (t.isValid()) {
 		if (map.isSquareRevealed(t)) {
-			map.revealSquare(t);
+			map.revealSquare_Coord3(t);
 			activated = true;
 		}
 	}
@@ -19,7 +18,7 @@ bool torchLogic(Game& game) {
 	t = location.decrementX();
 	if (t.isValid()) {
 		if (map.isSquareRevealed(t)) {
-			map.revealSquare(t);
+			map.revealSquare_Coord3(t);
 			activated = true;
 		}
 	}
@@ -27,7 +26,7 @@ bool torchLogic(Game& game) {
 	t = location.incrementY();
 	if (t.isValid()) {
 		if (map.isSquareRevealed(t)) {
-			map.revealSquare(t);
+			map.revealSquare_Coord3(t);
 			activated = true;
 		}
 	}
@@ -35,7 +34,7 @@ bool torchLogic(Game& game) {
 	t = location.decrementY();
 	if (t.isValid()) {
 		if (map.isSquareRevealed(t)) {
-			map.revealSquare(t);
+			map.revealSquare_Coord3(t);
 			activated = true;
 		}
 	}
