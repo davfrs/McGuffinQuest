@@ -29,7 +29,7 @@ public:
 	void resetActiveStats();
 	bool attackEntity(Entity& other);//returns true if the target is now dead
 	
-	const string getName() const { return this->getName; }
+	const string getName() const { return this->name; }
 
 	inline Inventory::Inventory& getInv() { return this->inv; }
 	int getCurrentHP() const { return this->active.HP; }

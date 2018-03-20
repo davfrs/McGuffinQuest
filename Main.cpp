@@ -8,12 +8,13 @@
 int main() {
 	Game& game(Game2("player",{100, 10, 4}));
 	
-	Entity enemy("enemy",{ 100, 8, 2 });
+	Entity enemy("enemy",{ 100, 50, 2 });
 	
 	cout << "success preparing test" << endl;
-	cout << enemy.getCurrentHP() << endl;
-	game.player.attackEntity(enemy);//player has 10 base attack, enemy has 2 base defense. expecting 10-2=8 damage.
-	cout << enemy.getCurrentHP() << endl;
-
+	cout << game.player.getCurrentHP() << endl;
+	enemy.attackEntity(game.player);
+	cout << game.player.getCurrentHP() << endl;
+	cout << game.allConsumables->getAndCopy("potion")->attemptUse() << endl;
+	cout << game.player.getCurrentHP() << endl;
 	cin.get();
 }
