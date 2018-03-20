@@ -11,7 +11,7 @@ class Player : public Entity{
 public:
 
 	
-	Player(EntityStats stats) :Entity(stats) { }
+	Player(string name, EntityStats stats) :Entity(name, stats) { }
 };
 
 #endif

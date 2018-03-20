@@ -10,6 +10,8 @@ using namespace std;
 using MapSCI = map<const string, shared_ptr<Inventory::ConsumableItem>>;
 
 const string TORCHNAME("torch");
+const string POTION("potion");
+const int POTIONHEAL = 10;
 
 
 class Consumables : public MapSCI {

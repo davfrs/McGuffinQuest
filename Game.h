@@ -5,10 +5,14 @@
 
 class Game;
 
+#include <string>
+
 #include "Terrain.h"
 #include "Entity.h"
 #include "Player.h"
 #include "Consumables.h"
+
+using std::string;
 
 #define INVENTORYLIMIT 8
 
@@ -20,7 +24,7 @@ public:
 
 
 	Consumables* allConsumables;
-	Game(EntityStats playerStats) : player(playerStats), map(), allConsumables(nullptr){
+	Game(string playername, EntityStats playerStats) : player(playername, playerStats), map(), allConsumables(nullptr) {
 		
 	}
 	virtual ~Game() {

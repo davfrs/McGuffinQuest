@@ -26,7 +26,11 @@ bool Entity::takeExactDamage(int damage) {
 	return (this->active.HP -= damage) <= 0;
 }
 
-void Entity::heal(int health) {
+bool Entity::heal(int health) {
+	if (health <= 0)
+		return false;
+	int o = this->active.HP;
 	if ((this->active.HP += health) > this->original.HP)
 		this->active.HP = this->original.HP;
+	return o != this->active.HP;
 }
