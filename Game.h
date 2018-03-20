@@ -6,6 +6,7 @@
 class Game;
 
 #include "Terrain.h"
+#include "Entity.h"
 #include "Player.h"
 #include "Consumables.h"
 
@@ -14,12 +15,12 @@ class Game;
 class Game {
 	
 public:
-	PlayerData player;
+	Player player;
 	Map map;
 
 
 	Consumables* allConsumables;
-	Game() : player(), map(), allConsumables(nullptr){
+	Game(EntityStats playerStats) : player(playerStats), map(), allConsumables(nullptr){
 		
 	}
 	virtual ~Game() {

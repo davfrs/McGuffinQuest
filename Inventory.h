@@ -25,13 +25,12 @@ namespace Inventory
 	protected:
 		Item(ItemType type, string displayName) :type(type), displayName(displayName) {}
 	public:
-		Item(const Item& copy) :displayName(copy.displayName), type(copy.type) {}
-		Item(Item&&) = default;
 		virtual ~Item() {};
 		inline ItemType getType() const { return type; }
 		inline const string getName() const { return displayName; }
 		friend ostream& operator<<(ostream& out, const Item& item) { return item.print(out); }
 		virtual ostream& print(ostream& out) const { return out << this->displayName; }
+		shared_ptr<Item> operator()() { return shared_ptr<Item>(this); }
 	};
 	
 	class MoneyItem : public Item {
@@ -44,30 +43,33 @@ namespace Inventory
 		virtual ostream& print(ostream& out) const { return out << this->getWorth() << ' ' << this->getName(); }
 	};
 	class WeaponItem : public Item {
+		int power;
 	public:
-		WeaponItem(string name) :Item(ItemType::Weapon, name) { }
+		WeaponItem(string name, int power) : Item(ItemType::Weapon, name), power(power) { }
+		int getPower() { return this->power; }
 	};
 	class ArmorItem : public Item {
+		int power;
 	public:
-		ArmorItem(string name) :Item(ItemType::Armor, name) { }
+		ArmorItem(string name, int power) : Item(ItemType::Armor, name), power(power) { }
+		int getPower() { return this->power; }
 	};
 	class ConsumableItem : public Item {
 		int count;
 	public:
 		ConsumableItem(string name) : ConsumableItem(name, 1) { }
 		ConsumableItem(string name, int count) :Item(ItemType::StackableConsumable, name), count(count) { }
-		ConsumableItem(const ConsumableItem& copy) : Item(copy), count(copy.count) {}
-		ConsumableItem(ConsumableItem&&) = default;
 		/**Returns true if the two ConsumableItem(s) can (and have been) merge.
 		 * If the two are merged, the Consumable 'this' contains the merged items.
 		 */
-		bool merge(ConsumableItem& other);
-		virtual bool mergeable(const ConsumableItem& other) { return this->getName() == other.getName(); }
+		bool merge(shared_ptr<ConsumableItem> other);
+		virtual bool mergeable(const shared_ptr<ConsumableItem> other) { return this->getName() == other->getName(); }
 		inline int getCount() const { return count; }
-		virtual bool _use() {}
+		virtual bool _use() = 0;
 		bool attemptUse();
 		virtual ostream& print(ostream& out) { return out << this->getName() << " ("+this->count+')'; }
-		virtual shared_ptr<ConsumableItem> clone();// { return make_shared<ConsumableItem>(ConsumableItem(*this)); }
+		virtual shared_ptr<ConsumableItem> clone() =0;
+		shared_ptr<ConsumableItem> operator()(){ return shared_ptr<ConsumableItem>(this); }
 	};
 	class ConsumableItem_Lambda :public ConsumableItem {
 		function<bool()> useFunction;
@@ -75,17 +77,7 @@ namespace Inventory
 		ConsumableItem_Lambda(function<bool()> useFunction, string name) :ConsumableItem(name), useFunction(useFunction) { }
 		ConsumableItem_Lambda(function<bool()> useFunction, string name, int count) :ConsumableItem(name, count), useFunction(useFunction) { }
 		virtual bool _use() { return this->useFunction(); }
-		virtual shared_ptr<ConsumableItem> clone() { return make_shared<ConsumableItem>(ConsumableItem_Lambda(*this)); }
-	};
-	template<typename T>
-	class Reference {
-		T& v;
-		Reference(const Reference& copy) = delete;
-	public:
-		Reference(T& v) :v(v) {}
-		~Reference() {}
-		T& get() { return this->v; }
-		T& operator()() { return this->v; }
+		virtual shared_ptr<ConsumableItem> clone();
 	};
 	enum AttemptedUseStates {
 		Used,
@@ -94,17 +86,17 @@ namespace Inventory
 	};
 	class Inventory {
 		unsigned long money;
-		Reference<WeaponItem>* currentWeapon = nullptr;
-		Reference<ArmorItem>* currentArmor = nullptr;
+		shared_ptr<WeaponItem> currentWeapon;
+		shared_ptr<ArmorItem> currentArmor;
 
-		vector<Reference<ConsumableItem>*> consumables;
-		vector<Reference<WeaponItem>*> otherWeapons;
-		vector<Reference<ArmorItem>*> otherArmors;
+		vector<shared_ptr<ConsumableItem>> consumables;
+		vector<shared_ptr<WeaponItem>> otherWeapons;
+		vector<shared_ptr<ArmorItem>> otherArmors;
 		int inventoryLimit;
 		int currentInventoryCount;
 	public:
 		Inventory(int inventoryLimit) : inventoryLimit(inventoryLimit), currentInventoryCount(0){ }
-		~Inventory();
+		~Inventory() {}
 		inline unsigned long getHeldMoney() { return money; }
 		/**Returns the amount of money that was unable to be added to the inventory.
 		 */
@@ -117,21 +109,34 @@ namespace Inventory
 		bool swapActiveWeapon(int weaponNumber);
 		AttemptedUseStates useConsumable(int consumableNumber);
 		
-		const vector<Reference<ConsumableItem>*> getConsumables()const { return this->consumables; }
-		const vector<Reference<WeaponItem>*> getOtherWeapons()const { return this->otherWeapons; }
-		const vector<Reference<ArmorItem>*> getOtherArmors()const { return this->otherArmors; }
+		const vector<shared_ptr<ConsumableItem>> getConsumables()const { return this->consumables; }
+		const vector<shared_ptr<WeaponItem>> getOtherWeapons()const { return this->otherWeapons; }
+		const vector<shared_ptr<ArmorItem>> getOtherArmors()const { return this->otherArmors; }
 
 		bool  hasActiveWeapon()const { return this->currentWeapon != nullptr; }
-		const WeaponItem& getCurrentWeapon()const { return this->currentWeapon->get(); }
-		WeaponItem& removeCurrentWeapon();
+		const shared_ptr<WeaponItem> getCurrentWeapon()const { return this->currentWeapon; }
+		shared_ptr<WeaponItem> removeCurrentWeapon();
+		void unequipCurrentWeapon();
+		shared_ptr<WeaponItem> removeWeapon(int number);
+
 		bool hasActiveArmor()const { return this->currentArmor != nullptr; }
-		const ArmorItem& getCurrentArmor()const { return this->currentArmor->get(); }
-		ArmorItem& removeCurrentArmor();
+		const shared_ptr<ArmorItem> getCurrentArmor()const { return this->currentArmor; }
+		shared_ptr<ArmorItem> removeCurrentArmor();
+		void unequipCurrentArmor();
+		shared_ptr<ArmorItem> removeArmor(int number);
+
+		shared_ptr<ConsumableItem> removeConsumable(int number);
 
 		friend ostream& operator<<(ostream& out, Inventory& inv);
 		void printWeapons(ostream& out) const;
 		void printArmors(ostream& out) const;
 		void printConsumables(ostream& out) const;
+
+		int getCurrentInventoryUsage() const { return this->currentInventoryCount; }
+		int getInventoryCapacity() const { return this->inventoryLimit; }
+		void addCapacity(int capacity) { this->inventoryLimit += capacity; }
+
+		vector<shared_ptr<Item>> dropEverything();
 	};
 }
 #endif

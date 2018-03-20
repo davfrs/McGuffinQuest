@@ -3,7 +3,7 @@
 #include "Terrain.h"
 
 bool torchLogic(Game& game) {
-	COORDINATE3 location(game.player.location);
+	COORDINATE3 location = game.map.playerLocation();
 	Map map = game.map;
 	bool activated = false;
 
