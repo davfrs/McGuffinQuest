@@ -20,7 +20,7 @@ struct EntityStats {
 class Entity {
 	string name;
 	EntityStats original, active;
-	Inventory::Inventory inv;
+	Inventory::InventoryData inv;
 	bool takeExactDamage(int damage);
 protected:
 	bool defendFromAttack(int damage);
@@ -31,7 +31,7 @@ public:
 	
 	const string getName() const { return this->name; }
 
-	inline Inventory::Inventory& getInv() { return this->inv; }
+	inline Inventory::InventoryData& getInv() { return this->inv; }
 	int getCurrentHP() const { return this->active.HP; }
 	int getMaxHP() const { return this->original.HP; }
 	bool heal(int health);

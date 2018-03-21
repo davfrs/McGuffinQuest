@@ -17,9 +17,9 @@ namespace Inventory {
 
 		
 	shared_ptr<ConsumableItem> ConsumableItem_Lambda::clone() {
-		return (*new ConsumableItem_Lambda(this->useFunction, this->getName()))();
+		return (*new ConsumableItem_Lambda(this->useFunction, this->getName(), this->getDescription(), this->getBaseWorth()))();
 	}
-	unsigned long Inventory::addMoney(unsigned long money) {
+	unsigned long InventoryData::addMoney(unsigned long money) {
 		unsigned long temp = this->money + money;
 		if (money > temp) {
 			this->money = 0;
@@ -29,7 +29,7 @@ namespace Inventory {
 		this->money = temp;
 		return 0;
 	}
-	unsigned long Inventory::removeMoney(unsigned long money) {
+	unsigned long InventoryData::removeMoney(unsigned long money) {
 		if (this->money < money) {
 			money -= this->money;
 			this->money = 0;
@@ -38,7 +38,7 @@ namespace Inventory {
 		this->money -= money;
 		return 0;
 	}
-	vector<shared_ptr<Item>> Inventory::addAsPossible(vector<shared_ptr<Item>> items) {
+	vector<shared_ptr<Item>> InventoryData::addAsPossible(vector<shared_ptr<Item>> items) {
 		vector<shared_ptr<Item>> faileds;
 		for (shared_ptr<Item> each : items) {
 			if (each == nullptr)
@@ -104,7 +104,7 @@ namespace Inventory {
 		}
 		return faileds;
 	}
-	bool Inventory::swapActiveArmor(int armorNumber) {
+	bool InventoryData::swapActiveArmor(int armorNumber) {
 		if (this->otherArmors.size() <= (unsigned)armorNumber || armorNumber < 0)
 			return false;
 		if (this->currentArmor == nullptr) {
@@ -116,7 +116,7 @@ namespace Inventory {
 		}
 		return true;
 	}
-	bool Inventory::swapActiveWeapon(int weaponNumber) {
+	bool InventoryData::swapActiveWeapon(int weaponNumber) {
 		if (this->otherWeapons.size() <= (unsigned)weaponNumber || weaponNumber < 0)
 			return false;
 		if (this->currentWeapon == nullptr) {
@@ -129,7 +129,7 @@ namespace Inventory {
 		}
 		return true;
 	}
-	AttemptedUseStates Inventory::useConsumable(int consumableNumber) {
+	AttemptedUseStates InventoryData::useConsumable(int consumableNumber) {
 		if (this->consumables.size() <= (unsigned)consumableNumber || consumableNumber < 0)
 			return AttemptedUseStates::DoesNotExist;
 		shared_ptr<ConsumableItem> consumable = this->consumables[consumableNumber];
@@ -142,17 +142,17 @@ namespace Inventory {
 		}
 		return AttemptedUseStates::Unusable;
 	}
-	shared_ptr<WeaponItem> Inventory::removeCurrentWeapon() {
+	shared_ptr<WeaponItem> InventoryData::removeCurrentWeapon() {
 		shared_ptr<WeaponItem> ret = this->currentWeapon;
 		this->currentWeapon.reset();
 		return ret;
 	}
-	shared_ptr<ArmorItem> Inventory::removeCurrentArmor() {
+	shared_ptr<ArmorItem> InventoryData::removeCurrentArmor() {
 		shared_ptr<ArmorItem> ret = this->currentArmor;
 		this->currentWeapon.reset();
 		return ret;
 	}
-	shared_ptr<WeaponItem> Inventory::removeWeapon(int weaponNumber) {
+	shared_ptr<WeaponItem> InventoryData::removeWeapon(int weaponNumber) {
 		if (this->otherWeapons.size() <= (unsigned)weaponNumber || weaponNumber < 0)
 			return shared_ptr<WeaponItem>();
 		shared_ptr<WeaponItem> ret = this->otherWeapons[weaponNumber];
@@ -160,7 +160,7 @@ namespace Inventory {
 		this->currentInventoryCount--;
 		return ret;
 	}
-	shared_ptr<ArmorItem> Inventory::removeArmor(int armorNumber) {
+	shared_ptr<ArmorItem> InventoryData::removeArmor(int armorNumber) {
 		if (this->otherArmors.size() <= (unsigned)armorNumber || armorNumber < 0)
 			return shared_ptr<ArmorItem>();
 		shared_ptr<ArmorItem> ret = this->otherArmors[armorNumber];
@@ -168,7 +168,7 @@ namespace Inventory {
 		this->currentInventoryCount--;
 		return ret;
 	}
-	shared_ptr<ConsumableItem> Inventory::removeConsumable(int consumableNumber) {
+	shared_ptr<ConsumableItem> InventoryData::removeConsumable(int consumableNumber) {
 		if (this->consumables.size() <= (unsigned)consumableNumber || consumableNumber < 0)
 			return shared_ptr<ConsumableItem>();
 		shared_ptr<ConsumableItem> ret = this->consumables[consumableNumber];
@@ -176,29 +176,29 @@ namespace Inventory {
 		this->currentInventoryCount--;
 		return ret;
 	}
-	void Inventory::unequipCurrentWeapon() {
+	void InventoryData::unequipCurrentWeapon() {
 		auto t = this->currentWeapon;
 		this->otherWeapons.push_back(t);
 		this->currentWeapon.reset();
 	}
-	void Inventory::unequipCurrentArmor() {
+	void InventoryData::unequipCurrentArmor() {
 		auto t = this->currentArmor;
 		this->otherArmors.push_back(t);
 		this->currentArmor.reset();
 	}
 
-	ostream& operator<<(ostream& out, Inventory& inv) {
+	ostream& operator<<(ostream& out, InventoryData& inv) {
 		out << inv.money << ' ' << MONEYNAME << endl;
 
 		if (inv.hasActiveWeapon()) {
-			out << inv.getCurrentWeapon();
+			out << *inv.getCurrentWeapon();
 		} else {
 			out << "no weapon";
 		}
 		out << endl;
 
 		if (inv.hasActiveArmor()) {
-			out << inv.getCurrentArmor();
+			out << *inv.getCurrentArmor();
 		}
 		else {
 			out << "no armor";
@@ -210,10 +210,10 @@ namespace Inventory {
 		return out;
 	}
 
-	void Inventory::printWeapons(ostream& out) const {
+	void InventoryData::printWeapons(ostream& out) const {
 		out << "Active Weapon:" << endl;
 		if (this->hasActiveWeapon()) {
-			out << this->getCurrentWeapon() << endl;
+			out << *this->getCurrentWeapon() << endl;
 		} else {
 			out << "no active weapon" << endl;
 		}
@@ -222,10 +222,10 @@ namespace Inventory {
 			out << *each << endl;
 		}
 	}
-	void Inventory::printArmors(ostream& out) const {
+	void InventoryData::printArmors(ostream& out) const {
 		out << "Active Armor:" << endl;
 		if (this->hasActiveArmor()) {
-			out << this->getCurrentArmor() << endl;
+			out << *this->getCurrentArmor() << endl;
 		} else {
 			out << "no active armor" << endl;
 		}
@@ -234,12 +234,12 @@ namespace Inventory {
 			out << *each << endl;
 		}
 	}
-	void Inventory::printConsumables(ostream& out) const {
+	void InventoryData::printConsumables(ostream& out) const {
 		for (shared_ptr<ConsumableItem> each : this->getConsumables()) {
 			out << *each << endl;
 		}
 	}
-	vector<shared_ptr<Item>> Inventory::dropEverything() {
+	vector<shared_ptr<Item>> InventoryData::dropEverything() {
 		vector<shared_ptr<Item>> ret;
 		if (this->money != 0) {
 			ret.push_back((*new MoneyItem(this->money))());

@@ -43,6 +43,7 @@ bool torchLogic(Game& game) {
 }
 Consumables2::Consumables2(Game& game) {
 	//torch
-	this->emplace(TORCHNAME, (*new Inventory::ConsumableItem_Lambda([&game]() {return torchLogic(game);}, TORCHNAME))());
-	this->emplace(POTION, (*new Inventory::ConsumableItem_Lambda([&game]() {return game.player.heal(POTIONHEAL);}, POTION))());
+	this->emplace(TORCH_NAME, (*new Inventory::ConsumableItem_Lambda([&game]() {return torchLogic(game);}, TORCH_NAME, TORCH_DESC, TORCH_WORTH))());
+	this->emplace(POTION_NAME, (*new Inventory::ConsumableItem_Lambda([&game]() {return game.player.heal(POTION_HEAL);}, POTION_NAME, POTION_DESC, POTION_WORTH))());
+	this->emplace(MAXPOTION_NAME, (*new Inventory::ConsumableItem_Lambda([&game]() {return game.player.heal(game.player.getMaxHP());}, MAXPOTION_NAME, MAXPOTION_DESC, MAXPOTION_WORTH))());
 };

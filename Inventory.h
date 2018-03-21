@@ -3,6 +3,7 @@
 #ifndef INVENTORY
 #define INVENTORY
 
+#include <iostream>
 #include <string>
 #include <vector>
 #include <functional>
@@ -22,8 +23,9 @@ namespace Inventory
 	class Item {
 		const string displayName;
 		const ItemType type;
+		const int baseWorth;
 	protected:
-		Item(ItemType type, string displayName) :type(type), displayName(displayName) {}
+		Item(ItemType type, string displayName, int baseWorth) :type(type), displayName(displayName), baseWorth(baseWorth) {}
 	public:
 		virtual ~Item() {};
 		inline ItemType getType() const { return type; }
@@ -31,12 +33,13 @@ namespace Inventory
 		friend ostream& operator<<(ostream& out, const Item& item) { return item.print(out); }
 		virtual ostream& print(ostream& out) const { return out << this->displayName; }
 		shared_ptr<Item> operator()() { return shared_ptr<Item>(this); }
+		int getBaseWorth() const { return this->baseWorth; }
 	};
 	
 	class MoneyItem : public Item {
 		unsigned long worth;
 	public:
-		MoneyItem(unsigned long worth) : Item(ItemType::Money, MONEYNAME), worth(worth) {}
+		MoneyItem(unsigned long worth) : Item(ItemType::Money, MONEYNAME, 1), worth(worth) {}
 		inline unsigned long getWorth() const { return worth; }
 		inline bool isWorthless() { return worth == 0; }
 		void reassignWorth(unsigned long worth) { this->worth = worth; }
@@ -45,37 +48,39 @@ namespace Inventory
 	class WeaponItem : public Item {
 		int power;
 	public:
-		WeaponItem(string name, int power) : Item(ItemType::Weapon, name), power(power) { }
+		WeaponItem(string name, int power, int worth) : Item(ItemType::Weapon, name, worth), power(power) { }
 		int getPower() { return this->power; }
 	};
 	class ArmorItem : public Item {
 		int power;
 	public:
-		ArmorItem(string name, int power) : Item(ItemType::Armor, name), power(power) { }
+		ArmorItem(string name, int power, int worth) : Item(ItemType::Armor, name, worth), power(power) { }
 		int getPower() { return this->power; }
 	};
 	class ConsumableItem : public Item {
 		int count;
+		const string desc;
 	public:
-		ConsumableItem(string name) : ConsumableItem(name, 1) { }
-		ConsumableItem(string name, int count) :Item(ItemType::StackableConsumable, name), count(count) { }
+		ConsumableItem(string name, string desc, int worth, int count =1) :Item(ItemType::StackableConsumable, name, worth), desc(desc), count(count) { }
 		/**Returns true if the two ConsumableItem(s) can (and have been) merge.
 		 * If the two are merged, the Consumable 'this' contains the merged items.
 		 */
 		bool merge(shared_ptr<ConsumableItem> other);
+		void setUses(int uses) { this->count = uses; }
 		virtual bool mergeable(const shared_ptr<ConsumableItem> other) { return this->getName() == other->getName(); }
 		inline int getCount() const { return count; }
 		virtual bool _use() = 0;
 		bool attemptUse();
-		virtual ostream& print(ostream& out) { return out << this->getName() << " ("+this->count+')'; }
+		ostream& print(ostream& out) const { return out << this->getName() << " (" << this->count << ')'; }
 		virtual shared_ptr<ConsumableItem> clone() =0;
 		shared_ptr<ConsumableItem> operator()(){ return shared_ptr<ConsumableItem>(this); }
+		const string getDescription() const { return this->desc; }
 	};
 	class ConsumableItem_Lambda :public ConsumableItem {
 		function<bool()> useFunction;
 	public:
-		ConsumableItem_Lambda(function<bool()> useFunction, string name) :ConsumableItem(name), useFunction(useFunction) { }
-		ConsumableItem_Lambda(function<bool()> useFunction, string name, int count) :ConsumableItem(name, count), useFunction(useFunction) { }
+		ConsumableItem_Lambda(function<bool()> useFunction, string name, string desc, int worth) :ConsumableItem(name, desc, worth), useFunction(useFunction) { }
+		ConsumableItem_Lambda(function<bool()> useFunction, string name, string desc, int worth, int count) :ConsumableItem(name, desc, worth, count), useFunction(useFunction) { }
 		virtual bool _use() { return this->useFunction(); }
 		virtual shared_ptr<ConsumableItem> clone();
 	};
@@ -84,7 +89,7 @@ namespace Inventory
 		Unusable,
 		DoesNotExist
 	};
-	class Inventory {
+	class InventoryData {
 		unsigned long money;
 		shared_ptr<WeaponItem> currentWeapon;
 		shared_ptr<ArmorItem> currentArmor;
@@ -95,8 +100,8 @@ namespace Inventory
 		int inventoryLimit;
 		int currentInventoryCount;
 	public:
-		Inventory(int inventoryLimit) : inventoryLimit(inventoryLimit), currentInventoryCount(0){ }
-		~Inventory() {}
+		InventoryData(int inventoryLimit) : inventoryLimit(inventoryLimit), currentInventoryCount(0), money(0){ }
+		~InventoryData() {}
 		inline unsigned long getHeldMoney() { return money; }
 		/**Returns the amount of money that was unable to be added to the inventory.
 		 */
@@ -127,7 +132,7 @@ namespace Inventory
 
 		shared_ptr<ConsumableItem> removeConsumable(int number);
 
-		friend ostream& operator<<(ostream& out, Inventory& inv);
+		friend ostream& operator<<(ostream& out, InventoryData& inv);
 		void printWeapons(ostream& out) const;
 		void printArmors(ostream& out) const;
 		void printConsumables(ostream& out) const;
@@ -137,6 +142,7 @@ namespace Inventory
 		void addCapacity(int capacity) { this->inventoryLimit += capacity; }
 
 		vector<shared_ptr<Item>> dropEverything();
+		vector<shared_ptr<Item>> makeEmptyItemListVector() { return vector<shared_ptr<Item>>(); }
 	};
 }
 #endif
