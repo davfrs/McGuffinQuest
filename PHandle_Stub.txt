@@ -1,0 +1,51 @@
+raw();
+char input;
+bool notPass;
+while (game.player.Status() == 1) {
+    //player status is 0, so continue
+    while (!notPass) {
+        while (! ( input = getch() ) ); //wait for player input
+        //arrow key input seems to be OS specific?
+        notPass = playerAction (input);
+    } //wait until the player performs a valid action
+    //game.turnCount++;
+    //Do enemies do anything? Or just exist?
+}
+
+/*    COORDINATE3 incrementX()
+    { return COORDINATE3(this->x + 1, this->y, this->z); }
+
+    COORDINATE3 decrementX()
+    { return COORDINATE3(this->x - 1, this->y, this->z); }
+
+    COORDINATE3 incrementY()
+    { return COORDINATE3(this->x, this->y + 1, this->z); }
+
+    COORDINATE3 decrementY()
+    { return COORDINATE3(this->x, this->y - 1, this->z); }*/
+
+bool playerAction (char action) {
+    bool acted = false;
+    if (action == '5') {
+        acted = true;
+    }
+    else if (action == '6') {
+        acted = game.player.moveNorth();
+    }
+    else if (action == '4') {
+        acted = game.player.moveSouth();
+    }
+    else if (action == '8') {
+        acted = game.player.moveWest();
+    }
+    else if (action == '2') {
+        acted = game.player.moveEast();
+    }
+    else if (action == '>') {
+        acted = game.player.moveDown();
+    }
+    else if (action == '<') {
+        acted = game.player.moveUp();
+    }
+    return acted;
+}

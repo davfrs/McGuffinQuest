@@ -3,6 +3,8 @@
 #ifndef DUNGEONBYTES
 #define DUNGEONBYTES
 
+const int RANDOMIZABLE_TERRAIN_TYPES = 7 //non-floor types
+
 enum DUNGEONBYTES
 {
     UNSEEN_TILE = 0x80,
@@ -21,7 +23,6 @@ enum DUNGEONBYTES
     HEAL = '+',
 //If you want to add more terrain, you have to do it in two places.
 //Here, and its sister (which has the same comment).
-    RANDOMIZABLE_TERRAIN_TYPES = 7, //non-floor types
     USED_STATUE = '/'
 };
 

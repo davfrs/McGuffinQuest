@@ -20,8 +20,7 @@ enum DIMENSIONS
 
 struct COORDINATE2
 {
-    int XCo;
-    int YCo;
+    int XCo, YCo;
 };
 
 class COORDINATE3
@@ -76,7 +75,6 @@ public:
     {
 #ifdef WRAPPING_LEVELS
         return true;
-
 #else
         return this->x < MAP_X_SIZE && this->x > -1 &&
                this->y < MAP_Y_SIZE && this->y > -1 &&
@@ -88,6 +86,7 @@ public:
 class Map
 {
     unsigned char dungeon[MAP_X_SIZE][MAP_Y_SIZE][MAP_Z_SIZE];
+    COORDINATE3 playerSpace(0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF);
 
     //I'd love to make it where like the UI goes on the left
     //and then the rest of the stuff happens
@@ -95,7 +94,7 @@ class Map
     //"HP: NN / XX" however is 11. So therefore absolute max width is 68 (due to needing a padding space)
     //And the inventory design could be simply like
     //ItemName (vertical), I forget how we were doing it.
-    bool generateLevel(int depth);
+    bool generateLevel(int dLv);
 
 public:
     Map()
@@ -110,25 +109,43 @@ public:
             dungeon[Xsp][Ysp][Zsp] = dungeon[Xsp][Ysp][Zsp] ^ UNSEEN_TILE;
         //strip unseen tile bit
         return dungeon[Xsp][Ysp][Zsp];
-    }
+    };
 
-    int getTilePlayer(int Xsp, int Ysp, int Zsp)
+    unsigned char getTile(int Xsp, int Ysp, int Zsp)
     {
-    }
+        return dungeon[Xsp][Ysp][Zsp];
+    };
+    
+    unsigned char getTile(COORDINATE3 coord)
+    {
+        return dungeon[coord.X()][coord.Y()][coord.Z()];
+    };
+    
+    unsigned char getTilePlayer(int Xsp, int Ysp, int Zsp)
+    {
+        return dungeon[Xsp][Ysp][Zsp];
+    };
+    
+    unsigned char getTilePlayer(COORDINATE3 coord)
+    {
+        return dungeon[coord.X()][coord.Y()][coord.Z()];
+    };
 
     bool isSquareRevealed(COORDINATE3 coord)
     {
         return (dungeon[coord.X()][coord.Y()][coord.Z()] & UNSEEN_TILE) == UNSEEN_TILE;
     }
 
-	int revealSquare_Coord3(COORDINATE3 coord)
-	{
-		return revealSquare(coord.X(), coord.Y(), coord.Z());
-	}
-
     COORDINATE3 playerLocation() {
         // TODO: keep track of player's location
-        return COORDINATE3(0,0,0);
+        return playerSpace;
+    }
+
+    void updatePlayer(int Xsp, int Ysp, int Zsp) { 
+    
+    }
+    void updatePlayer(COORDINATE3 newPlayerSpace) { 
+    
     }
 };
 
