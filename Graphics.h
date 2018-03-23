@@ -4,16 +4,14 @@
 #include <iostream>
 #include <string>
 
-#include "Terrain.h"
+#include "Map/Map.h"
 
-enum VIEW
-{
+enum VIEW {
     VIEW_MAP,
     VIEW_INVENTORY
 };
 
-class Graphics
-{
+class Graphics {
 private:
     Map map{};
 

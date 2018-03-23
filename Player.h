@@ -23,7 +23,7 @@ int Player::Status() {
     //Win condition
     if (getCurrentHP() != 0)
         return 1;
-    else 
+    else
         return 0;
 }
 
@@ -32,7 +32,7 @@ int Player::Status() {
         return dungeon[coord.X()][coord.Y()][coord.Z()];
     };*/
 
-bool Player::moveUp() { 
+bool Player::moveUp() {
     if (map.getTile(map.playerSpace) == '<') {
         if (map.playerSpace.Z() == 0) {
             if (Status() == 2) {
@@ -44,26 +44,10 @@ bool Player::moveUp() {
     }
 }
 
-bool Player::moveDown() { 
+bool Player::moveDown() {
     if (map.getTile(map.playerSpace) == '>') {
         if (map.playerSpace.Z() > 0) {
             map.updatePlayer(map.playerSpace.X(), map.playerSpace.Y(), map.playerSpace.Z()+1);
     }
 
-}
-
-bool Player::moveNorth() { 
-    
-}
-
-bool Player::moveSouth() { 
-
-}
-
-bool Player::moveEast() { 
-
-}
-
-bool Player::moveWest() { 
-
-}
+#endif

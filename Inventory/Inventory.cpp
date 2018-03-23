@@ -1,26 +1,6 @@
 #include "Inventory.h"
 
 namespace Inventory {
-    bool ConsumableItem::merge(std::shared_ptr<ConsumableItem> other) {
-        if (this->mergeable(other)) {
-            this->count += other->count;
-            return true;
-        }
-        return false;
-    }
-
-    bool ConsumableItem::attemptUse() {
-        if (_use())
-            if (--this->count <= 0)
-                return true;
-        return false;
-    }
-
-    std::shared_ptr<ConsumableItem> ConsumableItem_Lambda::clone() {
-        return (*new ConsumableItem_Lambda(this->useFunction, this->getName(),
-                                           this->getDescription(), this->getBaseWorth()))();
-    }
-
     unsigned long InventoryData::addMoney(unsigned long money) {
         unsigned long temp = this->money + money;
         if (money > temp) {
@@ -220,9 +200,7 @@ namespace Inventory {
         this->currentArmor.reset();
     }
 
-    std::
-    ostream& operator<<(std::
-                        ostream& out, InventoryData& inv) {
+    std::ostream& operator<<(std::ostream& out, InventoryData& inv) {
         out << inv.money << ' ' << MONEYNAME << std::endl;
 
         if (inv.hasActiveWeapon()) {
@@ -247,8 +225,7 @@ namespace Inventory {
         return out;
     }
 
-    void InventoryData::printWeapons(std::
-                                     ostream& out) const {
+    void InventoryData::printWeapons(std::ostream& out) const {
         out << "Active Weapon:" << std::endl;
         if (this->hasActiveWeapon()) {
             out << *this->getCurrentWeapon() << std::endl;
@@ -262,8 +239,7 @@ namespace Inventory {
         }
     }
 
-    void InventoryData::printArmors(std::
-                                    ostream& out) const {
+    void InventoryData::printArmors(std::ostream& out) const {
         out << "Active Armor:" << std::endl;
         if (this->hasActiveArmor()) {
             out << *this->getCurrentArmor() << std::endl;
@@ -277,8 +253,7 @@ namespace Inventory {
         }
     }
 
-    void InventoryData::printConsumables(std::
-                                         ostream& out) const {
+    void InventoryData::printConsumables(std::ostream& out) const {
         for (std::shared_ptr<ConsumableItem> each : this->getConsumables()) {
             out << *each << std::endl;
         }

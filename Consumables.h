@@ -4,32 +4,22 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <memory>
 
-#include "Inventory.h"
-using namespace std;
-using MapSCI = map<const string, shared_ptr<Inventory::ConsumableItem>>;
+#include "Inventory/Inventory.h"
 
-const string TORCH_NAME("torch");
-const string POTION_NAME("potion");
-const string MAXPOTION_NAME("maxpotion");
+const std::string TORCH_NAME("torch");
+const std::string POTION_NAME("potion");
+const std::string MAXPOTION_NAME("maxpotion");
 
-
-
-const string TORCH_DESC("Exposes nearby tiles");
+const std::string TORCH_DESC("Exposes nearby tiles");
 const int TORCH_WORTH(50);
 
 const int POTION_HEAL = 10;
-const string POTION_DESC("Heals up to 10 HP");
+const std::string POTION_DESC("Heals up to 10 HP");
 const int POTION_WORTH(50);
 
-const string MAXPOTION_DESC("Fully heals you");
+const std::string MAXPOTION_DESC("Fully heals you");
 const int MAXPOTION_WORTH(500);
-
-
-class Consumables : public MapSCI {
-public:
-	Consumables() : MapSCI() {}
-	shared_ptr<Inventory::ConsumableItem> getAndCopy(const string name) { return this->find(name)->second.get()->clone(); }
-};
 
 #endif

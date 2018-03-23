@@ -1,17 +1,12 @@
 #ifndef GAME
 #define GAME
 
-class Game;
-
 #include <string>
-#include <utility>
 
-#include "Terrain.h"
+#include "Consumables.h"
+#include "Map/Map.h"
 #include "Entity.h"
 #include "Player.h"
-#include "Consumables.h"
-
-using std::string;
 
 class Game {
 
@@ -19,15 +14,11 @@ public:
     Player player;
     Map map;
 
-    Consumables *allConsumables;
+    std::map<const std::string, std::shared_ptr<Inventory::ConsumableItem>> consumables;
 
-    Game(string playerName, EntityStats playerStats) : player(std::move(playerName), playerStats), map(), allConsumables(nullptr) {
-
-    }
+    Game(std::string playerName, EntityStats playerStats);
 
     virtual ~Game() {
-        if (allConsumables)
-            delete allConsumables;
     }
 };
 

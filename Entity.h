@@ -1,41 +1,56 @@
-#pragma once
-
 #ifndef ENTITY
 #define ENTITY
 
 #include <string>
-#include "Inventory.h"
-#include "Terrain.h"
+#include "Inventory/Inventory.h"
+#include "Map/Map.h"
 
 #define STARTING_INVENTORY_CAPACITY 8
 
-using std::string;
-
 struct EntityStats {
-	int HP;
-	int strength;
-	int defense;
+    int HP;
+    int strength;
+    int defense;
 };
 
 class Entity {
-	string name;
-	EntityStats original, active;
-	Inventory::InventoryData inv;
-	bool takeExactDamage(int damage);
+    std::string name;
+    EntityStats originalStats;
+    EntityStats activeStats;
+    Inventory::InventoryData inv;
+
+    bool takeExactDamage(int damage);
+
 protected:
-	bool defendFromAttack(int damage);
+    bool defendFromAttack(int damage);
+
 public:
-	Entity(string name, EntityStats stats) : name(name), original(stats), active(stats), inv(STARTING_INVENTORY_CAPACITY) {}
-	void resetActiveStats();
-	bool attackEntity(Entity& other);//returns true if the target is now dead
-	
-	const string getName() const { return this->name; }
+    Entity(std::string name, EntityStats stats)
+            : name(name), originalStats(stats), activeStats(stats),
+              inv(STARTING_INVENTORY_CAPACITY) {
+    }
 
-	inline Inventory::InventoryData& getInv() { return this->inv; }
-	int getCurrentHP() const { return this->active.HP; }
-	int getMaxHP() const { return this->original.HP; }
-	bool heal(int health);
+    void resetActiveStats();
 
+    bool attackEntity(Entity& other);//returns true if the target is now dead
+
+    const std::string getName() const {
+        return this->name;
+    }
+
+    Inventory::InventoryData& getInv() {
+        return this->inv;
+    }
+
+    int getCurrentHP() const {
+        return this->activeStats.HP;
+    }
+
+    int getMaxHP() const {
+        return this->originalStats.HP;
+    }
+
+    bool heal(int health);
 };
 
 #endif
