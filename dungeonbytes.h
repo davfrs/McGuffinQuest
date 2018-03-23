@@ -43,7 +43,7 @@ public:
     }
 };
 
-const int RANDOMIZABLE_TERRAIN_TYPES = 7 //non-floor types
+const int RANDOMIZABLE_TERRAIN_TYPES = 7; //non-floor types
 
 enum DUNGEONBYTES
 {
