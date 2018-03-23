@@ -1,11 +1,10 @@
-#pragma once
-
 #ifndef GAME
 #define GAME
 
 class Game;
 
 #include <string>
+#include <utility>
 
 #include "Terrain.h"
 #include "Entity.h"
@@ -14,23 +13,22 @@ class Game;
 
 using std::string;
 
-#define INVENTORYLIMIT 8
-
 class Game {
-	
+
 public:
-	Player player;
-	Map map;
+    Player player;
+    Map map;
 
+    Consumables *allConsumables;
 
-	Consumables* allConsumables;
-	Game(string playername, EntityStats playerStats) : player(playername, playerStats), map(), allConsumables(nullptr) {
-		
-	}
-	virtual ~Game() {
-		if (allConsumables)
-			delete allConsumables;
-	}
+    Game(string playerName, EntityStats playerStats) : player(std::move(playerName), playerStats), map(), allConsumables(nullptr) {
+
+    }
+
+    virtual ~Game() {
+        if (allConsumables)
+            delete allConsumables;
+    }
 };
 
 #endif

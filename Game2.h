@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef GAME2
 #define GAME2
 
