@@ -51,6 +51,7 @@ namespace Inventory {
         unsigned long removeMoney(unsigned long money);
 
         std::vector<std::shared_ptr<Item>> addAsPossible(std::vector<std::shared_ptr<Item>> items);
+        std::shared_ptr<Item> addIfPossible(std::shared_ptr<Item> item);
 
         bool swapActiveArmor(int armorNumber);
 

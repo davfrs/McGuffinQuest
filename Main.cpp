@@ -56,5 +56,14 @@ int main() {
     playerinv.printWeapons(cout);
     playerinv.printArmors(cout);
     playerinv.printConsumables(cout);
+
+
+    cout << "Started Entity Generation Test" << endl;
+    auto generated = game.generateRandomEnemy(0);
+    generated = game.generateRandomEnemy(0);
+    generated = game.generateRandomEnemy(0);
+    generated = game.generateRandomEnemy(50);
+    generated = game.generateRandomEnemy(50);
+    generated = game.generateRandomEnemy(50);
     cin.get();
 }

@@ -21,87 +21,92 @@ namespace Inventory {
         this->money -= money;
         return 0;
     }
+    std::shared_ptr<Item> InventoryData::addIfPossible(std::shared_ptr<Item> itemPtr) {
+        ItemType type = itemPtr->getType();
+        switch (type) {
+        case Money: {
+            auto moneyItem = std::static_pointer_cast<MoneyItem>(itemPtr);
 
-    std::vector<std::shared_ptr<Item>> InventoryData::addAsPossible(ItemPointerContainer items) {
+            unsigned long worth = moneyItem->getWorth();
+            unsigned long remaining = this->addMoney(worth);
+            if (remaining == 0) {
+            }
+            else {
+                //std::shared_ptr<Item> money);
+                return std::shared_ptr<Item>(new MoneyItem(remaining));
+            }
+            break;
+        }
+
+        case StackableConsumable: {
+            auto consumableItem = std::static_pointer_cast<ConsumableItem>(itemPtr);
+
+            bool nadded = true;
+            for (auto e : this->consumables) {
+                if (e->merge(consumableItem)) {
+                    nadded = false;
+                    break;
+                }
+            }
+            if (nadded) {
+                if (this->inventoryLimit > this->currentInventoryCount) {
+                    this->currentInventoryCount++;
+                    this->consumables.push_back(consumableItem);
+                }
+                else {
+                    return itemPtr;
+                }
+            }
+            break;
+        }
+
+        case Weapon: {
+            auto weapon = std::static_pointer_cast<WeaponItem>(itemPtr);
+            if (this->currentWeapon == nullptr) {
+                this->currentWeapon = weapon;
+            }
+            else {
+                if (inventoryLimit > currentInventoryCount) {
+                    this->currentInventoryCount++;
+                    this->otherWeapons.push_back(weapon);
+                }
+                else {
+                    return itemPtr;
+                }
+            }
+            break;
+        }
+
+        case Armor: {
+            auto armor = std::static_pointer_cast<ArmorItem>(itemPtr);
+
+            if (this->currentArmor == nullptr) {
+                this->currentArmor = armor;
+            }
+            else {
+                if (inventoryLimit > currentInventoryCount) {
+                    this->currentInventoryCount++;
+                    this->otherArmors.push_back(armor);
+                }
+                else {
+                    itemPtr;
+                }
+            }
+            break;
+        }
+        }
+        return std::shared_ptr<Item>();
+    }
+
+    std::vector<std::shared_ptr<Item>> InventoryData::addAsPossible(std::vector<std::shared_ptr<Item>> items) {
         ItemPointerContainer failed;
         for (auto itemPtr : items) {
             if (itemPtr == nullptr) {
                 continue;
             }
-
-            ItemType type = itemPtr->getType();
-            switch (type) {
-            case Money: {
-                auto moneyItem = std::static_pointer_cast<MoneyItem>(itemPtr);
-
-                unsigned long worth = moneyItem->getWorth();
-                unsigned long remaining = this->addMoney(worth);
-                if (remaining == 0) {
-                }
-                else {
-                    //std::shared_ptr<Item> money);
-                    failed.push_back(std::make_shared<Item>(MoneyItem(remaining)));
-                }
-                break;
-            }
-
-            case StackableConsumable: {
-                auto consumableItem = std::static_pointer_cast<ConsumableItem>(itemPtr);
-
-                bool nadded = true;
-                for (auto e : this->consumables) {
-                    if (e->merge(consumableItem)) {
-                        nadded = false;
-                        break;
-                    }
-                }
-                if (nadded) {
-                    if (this->inventoryLimit > this->currentInventoryCount) {
-                        this->currentInventoryCount++;
-                        this->consumables.push_back(consumableItem);
-                    }
-                    else {
-                        failed.push_back(itemPtr);
-                    }
-                }
-                break;
-            }
-
-            case Weapon: {
-                auto weapon = std::static_pointer_cast<WeaponItem>(itemPtr);
-                if (this->currentWeapon == nullptr) {
-                    this->currentWeapon = weapon;
-                }
-                else {
-                    if (inventoryLimit > currentInventoryCount) {
-                        this->currentInventoryCount++;
-                        this->otherWeapons.push_back(weapon);
-                    }
-                    else {
-                        failed.push_back(itemPtr);
-                    }
-                }
-                break;
-            }
-
-            case Armor: {
-                auto armor = std::static_pointer_cast<ArmorItem>(itemPtr);
-
-                if (this->currentArmor == nullptr) {
-                    this->currentArmor = armor;
-                }
-                else {
-                    if (inventoryLimit > currentInventoryCount) {
-                        this->currentInventoryCount++;
-                        this->otherArmors.push_back(armor);
-                    }
-                    else {
-                        failed.push_back(itemPtr);
-                    }
-                }
-                break;
-            }
-            }
+            auto result = this->addIfPossible(itemPtr);
+            if (result != nullptr)
+                failed.push_back(result);
         }
 
         return failed;
