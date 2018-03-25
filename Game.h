@@ -2,6 +2,7 @@
 #define GAME
 
 #include <string>
+#include <memory>
 
 #include "Consumables.h"
 #include "Map/Map.h"
@@ -20,6 +21,7 @@ public:
 
     virtual ~Game() {
     }
+    std::shared_ptr<Inventory::ConsumableItem> getConsumableItem(const std::string name);
 };
 
 #endif

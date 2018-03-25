@@ -86,7 +86,7 @@ public:
 class Map
 {
     unsigned char dungeon[MAP_X_SIZE][MAP_Y_SIZE][MAP_Z_SIZE];
-    COORDINATE3 playerSpace(0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF);
+	COORDINATE3 playerSpace;
 
     //I'd love to make it where like the UI goes on the left
     //and then the rest of the stuff happens
@@ -97,7 +97,7 @@ class Map
     bool generateLevel(int dLv);
 
 public:
-    Map()
+    Map() : playerSpace(0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF)
     {
         srand(static_cast<unsigned int>(time(nullptr)));
         generateLevel(playerLocation().Z());

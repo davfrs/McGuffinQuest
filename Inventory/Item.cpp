@@ -17,6 +17,6 @@ namespace Inventory {
     }
 
     std::shared_ptr<ConsumableItem> ConsumableItem_Lambda::clone() {
-        return (*new ConsumableItem_Lambda(this->useFunction, this->getName(), this->getDescription(), this->getBaseWorth()))();
+        return std::shared_ptr<ConsumableItem>(new ConsumableItem_Lambda(this->useFunction, this->getName(), this->getDescription(), this->getBaseWorth()));
     }
 }

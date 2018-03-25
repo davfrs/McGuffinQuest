@@ -140,10 +140,6 @@ namespace Inventory {
 
         virtual std::shared_ptr<ConsumableItem> clone() =0;
 
-        std::shared_ptr<ConsumableItem> operator()() {
-            return std::shared_ptr<ConsumableItem>(this);
-        }
-
         const std::string getDescription() const {
             return this->desc;
         }

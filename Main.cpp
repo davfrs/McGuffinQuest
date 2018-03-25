@@ -27,12 +27,14 @@ int main() {
 
     cout << "enemy set up" << endl << endl;
     itemList.clear();
-    auto potionLoc = game.consumables.find(POTION_NAME);
-    if (potionLoc != game.consumables.end()) {
-        auto potion = potionLoc->second;
-        potion->setUses(2);
-        itemList.push_back(potion);
+    auto potion = game.getConsumableItem(POTION_NAME);
+    if (potion == nullptr) {
+        //for this specific item, this is not possible.
+        cout << "The impossible happened, as the returned consumable in Game.cpp on line 31 is fake.";
+        exit(1000);
     }
+    potion->setUses(2);
+    itemList.push_back(potion);
 
     auto& playerinv = game.player.getInv();
     playerinv.addAsPossible(itemList);
