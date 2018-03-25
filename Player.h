@@ -2,9 +2,7 @@
 #define PLAYER
 
 #include "Inventory/Inventory.h"
-#include "Terrain.h"
 #include "Entity.h"
-#include "Map/Map.h"
 
 class Player : public Entity {
 public:
