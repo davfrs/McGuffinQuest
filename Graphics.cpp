@@ -34,7 +34,7 @@ std::string Graphics::printInventory(int line) {
     const char separatorChar = '#';
     unsigned long separatorLength = 76 - MAP_X_SIZE;
     const std::string separator = std::string(separatorLength, separatorChar);
-
+	Inventory::InventoryData& inv = this->game.player.getInv();
     switch (line) {
     case 0:
         return separator;
@@ -44,14 +44,22 @@ std::string Graphics::printInventory(int line) {
         return separator;
     case 3:
         return "";
-    case 4:
-        return "Health: " + std::to_string(this->game.player.getCurrentHP()) + " / " + std::to_string(this->game.player.getMaxHP());
+	case 3:
+		return this->game.player.getName();
+	case 4:
+		return "" + std::to_string(inv.getHeldMoney()) + ' ' + Inventory::MONEYNAME;
     case 5:
-        return "";
+        return "Health: " + std::to_string(this->game.player.getCurrentHP()) + " / " + std::to_string(this->game.player.getMaxHP());
     case 6:
+        return "";
+    case 7:
         return "Items:";
+	case 8:
+		return inv.getCurrentWeaponString();
+	case 9:
+		return inv.getCurrentArmorString();
     default:
-        int itemNumber = line - 7;
+        int itemNumber = line - 10;
         // TODO: get player's items and display their name
         return itemNumber < 10 ? "<item " + std::to_string(itemNumber) + '>' : "";
     }

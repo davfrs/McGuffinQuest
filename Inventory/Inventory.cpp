@@ -208,20 +208,11 @@ namespace Inventory {
     std::ostream& operator<<(std::ostream& out, InventoryData& inv) {
         out << inv.money << ' ' << MONEYNAME << std::endl;
 
-        if (inv.hasActiveWeapon()) {
-            out << *inv.getCurrentWeapon();
-        }
-        else {
-            out << "no weapon";
-        }
+		out << inv.getCurrentWeaponString();
+        
         out << std::endl;
 
-        if (inv.hasActiveArmor()) {
-            out << *inv.getCurrentArmor();
-        }
-        else {
-            out << "no armor";
-        }
+		out << inv.getCurrentArmorString();
         out << std::endl;
 
         out << "inventory space: " << inv.currentInventoryCount << '/' << inv.inventoryLimit
