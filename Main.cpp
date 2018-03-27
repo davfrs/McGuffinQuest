@@ -45,6 +45,28 @@ shared_ptr<Game> pregame() {
     clearKeyboard();
     return game;
 }
+void enemyEncounter(Game& game) {
+    shared_ptr<Entity>enemy = game.generateRandomEnemy(game.map.playerLocation().Z());
+    while (game.player.getCurrentHP() > 0 && enemy->getCurrentHP() > 0) {
+        char input = getCharInput();
+        switch (input) {
+        case' ':
+
+            enemy->attackEntity(game.player);
+            break;
+        case'e':
+            if (game.player.attackEntity(*enemy)) {
+                //enemy has died.
+                game.player.resetActiveStats();
+                auto couldNotFit = game.player.getInv().addAsPossible(enemy->getInv().dropEverything());
+                //too bad for the items that wouldn't fit.
+				game.map.__setTile(game.map.playerLocation(), FLOOR);
+            } else {
+                enemy->attackEntity(game.player);
+            }
+        }
+    }
+}
 int main() {
     shared_ptr<Game> game = pregame();
     Graphics graphicDisplay(*game);
@@ -98,7 +120,7 @@ int main() {
             char tile = game->map.updatePlayer(newLocation);
             switch (tile) {
             case MONSTER:
-
+                enemyEncounter(*game);
                 break;
             case TRAP:
 

@@ -1,38 +1,42 @@
 #include "Game.h"
+#include <functional>
 
-bool torchLogic(Game& game) {
-    COORDINATE3 location = game.map.playerLocation();
+bool torchLogic(Game& game, COORDINATE3 coord) {
+    if (game.map.isSquareRevealed(coord)) {
+        game.map.revealSquare(coord);
+        return true;
+    }
+    return false;
+}
+
+bool useAround(Game& game, COORDINATE3 location, std::function<bool(Game&, COORDINATE3)> useFunction) {
     Map map = game.map;
     bool activated = false;
 
     COORDINATE3 t = location.incrementX();
     if (t.isValid()) {
-        if (map.isSquareRevealed(t)) {
-            map.revealSquare(t);
+        if (useFunction(game, t)){
             activated = true;
         }
     }
     
     t = location.decrementX();
     if (t.isValid()) {
-        if (map.isSquareRevealed(t)) {
-            map.revealSquare(t);
+        if (useFunction(game, t)) {
             activated = true;
         }
     }
 
     t = location.incrementY();
     if (t.isValid()) {
-        if (map.isSquareRevealed(t)) {
-            map.revealSquare(t);
+        if (useFunction(game, t)) {
             activated = true;
         }
     }
 
     t = location.decrementY();
     if (t.isValid()) {
-        if (map.isSquareRevealed(t)) {
-            map.revealSquare(t);
+        if (useFunction(game, t)) {
             activated = true;
         }
     }
@@ -63,7 +67,9 @@ Game::Game(std::string playerName, EntityStats playerStats)
     armorNames.push_back("old chainmail");
     armorNames.push_back("beautiful cloth");
 
-    consumables.emplace(TORCH_NAME, std::shared_ptr<Inventory::ConsumableItem>(new Inventory::ConsumableItem_Lambda([this]() { return torchLogic(*this); }, TORCH_NAME, TORCH_DESC, TORCH_WORTH)));
+    consumables.emplace(TORCH_NAME, std::shared_ptr<Inventory::ConsumableItem>(new Inventory::ConsumableItem_Lambda([this]() { return useAround(*this, this->map.playerLocation(),*torchLogic); }, TORCH_NAME, TORCH_DESC, TORCH_WORTH)));
+    consumables.emplace(SUPERTORCH_NAME, std::shared_ptr<Inventory::ConsumableItem>(new Inventory::ConsumableItem_Lambda([this]() { return useAround(*this, this->map.playerLocation(), [](Game& game,COORDINATE3 location) { return useAround(game, location, *torchLogic); }); }, SUPERTORCH_NAME, SUPERTORCH_DESC, SUPERTORCH_WORTH)));
+    consumables.emplace(MEGATORCH_NAME, std::shared_ptr<Inventory::ConsumableItem>(new Inventory::ConsumableItem_Lambda([this]() { return useAround(*this, this->map.playerLocation(), [](Game& game, COORDINATE3 location) { return useAround(game, location, [](Game& game, COORDINATE3 location) { return useAround(game, location, *torchLogic); } ); }); }, MEGATORCH_NAME, MEGATORCH_DESC, MEGATORCH_WORTH)));
     consumables.emplace(POTION_NAME, std::shared_ptr<Inventory::ConsumableItem>(new Inventory::ConsumableItem_Lambda([this]() { return player.heal(POTION_HEAL); }, POTION_NAME, POTION_DESC, POTION_WORTH)));
     consumables.emplace(MAXPOTION_NAME, std::shared_ptr<Inventory::ConsumableItem>(new Inventory::ConsumableItem_Lambda([this]() { return player.heal(player.getMaxHP()); }, MAXPOTION_NAME, MAXPOTION_DESC, MAXPOTION_WORTH)));
 }
@@ -120,6 +126,7 @@ std::shared_ptr<Entity> Game::generateRandomEnemy(int floorLevel) {
             inv.addIfPossible(this->generateWeapon(1));
             inv.addIfPossible(cheatSword);
         }
+        //std::shared_ptr<Inventory::ConsumableItem> hyperTorch(new Inventory::ConsumableItem_Lambda([this]() { return useAround(*this, this->map.playerLocation(), *torchLogic); }, "hypertorch", "Reveals an entire floor!", 0));
         this->cheatMode = false;
     }
     return enemy;

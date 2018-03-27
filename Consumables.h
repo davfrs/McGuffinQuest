@@ -18,7 +18,7 @@ const std::string TORCH_DESC("Exposes nearby tiles");
 const int TORCH_WORTH(50);
 
 const std::string SUPERTORCH_DESC("Exposes more nearby tiles");
-const int TORCH_WORTH(250);
+const int SUPERTORCH_WORTH(250);
 
 const std::string MEGATORCH_DESC("Exposes many nearby tiles");
 const int MEGATORCH_WORTH(250);
