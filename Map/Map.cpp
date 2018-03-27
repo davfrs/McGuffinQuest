@@ -2,22 +2,30 @@
 #include <string>
 
 //Returns false if generation failed.
-bool Map::generateLevel(int dLv, bool wrappingEnabled = false) {
+bool Map::generateLevel(int dLv, bool wrappingEnabled) {
     if (dLv > MAP_Z_SIZE) {
         return false;
     }
+    if (generated[dLv])
+        return true;
+    generated[dLv] = true;
     for (int i = 0; i < MAP_X_SIZE; i++) {
         for (int j = 0; j < MAP_Y_SIZE; j++) {
             dungeon[i][j][dLv] = MONSTER | UNSEEN_TILE;
         }
     }
+    COORDINATE2 PS = this->playerLocation().toCOORDINATE2();
     COORDINATE2 PU, PD;
     PU.XCo = PU.YCo = PD.XCo = PD.YCo = 0;
-    while (PU.XCo == PD.XCo && PU.YCo == PD.YCo) {
+    while (PU == PD || PS == PU) {
         PU.XCo = rand() % MAP_X_SIZE;
         PU.YCo = rand() % MAP_Y_SIZE;
-        PD.XCo = rand() % MAP_X_SIZE;
-        PD.YCo = rand() % MAP_Y_SIZE;
+        if (dLv == 0) {
+            PD.XCo = rand() % MAP_X_SIZE;
+            PD.YCo = rand() % MAP_Y_SIZE;
+        } else {
+            PD = PS;
+        }
     }
 
     int t;
@@ -145,4 +153,5 @@ bool Map::generateLevel(int dLv, bool wrappingEnabled = false) {
             dungeon[i][j][dLv] = randomTiles[rand() % tiles];
         }
     }
+    return true;
 }

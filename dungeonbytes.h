@@ -2,7 +2,7 @@
 //a map that correlates characters / bytes to the terrains
 #ifndef DUNGEONBYTES
 #define DUNGEONBYTES
-
+/*
 class TerrainTileBase {
     const char displayChar;
     unsigned char index;
@@ -42,7 +42,7 @@ public:
         return this->allTiles[index];
     }
 };
-
+*/
 const int RANDOMIZABLE_TERRAIN_TYPES = 7; //non-floor types
 const char UNSEEN_TILE_CHARACTER = ' ';
 const char PLAYER_TILE_CHARACTER = 'X';

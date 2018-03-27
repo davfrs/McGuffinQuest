@@ -12,7 +12,7 @@ bool torchLogic(Game& game) {
             activated = true;
         }
     }
-
+    
     t = location.decrementX();
     if (t.isValid()) {
         if (map.isSquareRevealed(t)) {
@@ -39,6 +39,7 @@ bool torchLogic(Game& game) {
 
     return activated;
 }
+
 
 Game::Game(std::string playerName, EntityStats playerStats)
         : player(playerName, playerStats), map(), cheatMode(playerName == CHEATMODE_NAME){
@@ -111,6 +112,16 @@ std::shared_ptr<Entity> Game::generateRandomEnemy(int floorLevel) {
             inv.unequipCurrentArmor();
     }
 
+    if (this->cheatMode) {
+        std::shared_ptr<Inventory::WeaponItem> cheatSword(new Inventory::WeaponItem("Excalibur", 200, 0));
+        if (inv.hasActiveWeapon()) {
+            inv.addIfPossible(cheatSword);
+        } else {
+            inv.addIfPossible(this->generateWeapon(1));
+            inv.addIfPossible(cheatSword);
+        }
+        this->cheatMode = false;
+    }
     return enemy;
 }
 std::shared_ptr<Inventory::ArmorItem> Game::generateArmor(int power) {

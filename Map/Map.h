@@ -19,8 +19,10 @@ enum DIMENSIONS {
 
 struct COORDINATE2 {
     int XCo, YCo;
+    bool operator==(const COORDINATE2& other) {
+        return XCo == other.XCo && YCo == other.YCo;
+    }
 };
-
 class COORDINATE3 {
 private:
     int x;
@@ -40,32 +42,41 @@ public:
     bool operator==(const COORDINATE3& other) {
         return x == other.x && y == other.y && z == other.z;
     }
+    bool operator!=(const COORDINATE3& other) {
+        return x != other.x || y != other.y || z != other.z;
+    }
     inline int X() {
         return x;
     }
-
     inline int Y() {
         return y;
     }
-
     inline int Z() {
         return z;
     }
-
+    COORDINATE2 toCOORDINATE2() {
+        COORDINATE2 ret;
+        ret.XCo = x;
+        ret.YCo = y;
+        return ret;
+    }
     COORDINATE3 incrementX() {
         return COORDINATE3(this->x + 1, this->y, this->z);
     }
-
     COORDINATE3 decrementX() {
         return COORDINATE3(this->x - 1, this->y, this->z);
     }
-
     COORDINATE3 incrementY() {
         return COORDINATE3(this->x, this->y + 1, this->z);
     }
-
     COORDINATE3 decrementY() {
         return COORDINATE3(this->x, this->y - 1, this->z);
+    }
+    COORDINATE3 incrementZ() {
+        return COORDINATE3(this->x, this->y, this->z + 1);
+    }
+    COORDINATE3 decrementZ() {
+        return COORDINATE3(this->x, this->y, this->z - 1);
     }
 
 #ifdef WRAPPING_LEVELS
@@ -88,6 +99,7 @@ public:
 
 class Map {
     unsigned char dungeon[MAP_X_SIZE][MAP_Y_SIZE][MAP_Z_SIZE];
+    bool generated[MAP_Z_SIZE];
 
     COORDINATE3 playerSpace = COORDINATE3(MAP_X_SIZE / 2, 0, 0);
 
@@ -97,12 +109,14 @@ class Map {
     //"HP: NN / XX" however is 11. So therefore absolute max width is 68 (due to needing a padding space)
     //And the inventory design could be simply like
     //ItemName (vertical), I forget how we were doing it.
-    bool generateLevel(int dLv, bool wrappingEnabled);
+    bool generateLevel(int dLv, bool wrappingEnabled = false);
 
 public:
     Map() {
+        for (int i = 0;i < MAP_Z_SIZE;i++)
+            generated[i] = false;
         srand(static_cast<unsigned int>(time(nullptr)));
-        generateLevel(playerLocation().Z(), false);
+        generateLevel(playerLocation().Z());
     }
 
     int revealSquare(int Xsp, int Ysp, int Zsp) {
@@ -140,10 +154,6 @@ public:
         return dungeon[coord.X()][coord.Y()][coord.Z()];
     };
 
-    unsigned char getTilePlayer(COORDINATE3 coord) {
-        return dungeon[coord.X()][coord.Y()][coord.Z()];
-    };
-
     bool isSquareRevealed(COORDINATE3 coord) {
         return isSquareRevealed(coord.X(),coord.Y(),coord.Z());
     }
@@ -155,10 +165,15 @@ public:
         return playerSpace;
     }
 
-    void updatePlayer(int Xsp, int Ysp, int Zsp) {
+    unsigned char updatePlayer(COORDINATE3 newPlayerSpace) {
+        return revealSquare(this->playerSpace = newPlayerSpace);
     }
-
-    void updatePlayer(COORDINATE3 newPlayerSpace) {
+    void warpToNextDeaperLevel() {
+        this->playerSpace = this->playerSpace.incrementZ();
+        this->generateLevel(this->playerSpace.Z());
+    }
+    void warpUpALevel() {
+        this->playerSpace = this->playerSpace.decrementZ();
     }
 };
 
