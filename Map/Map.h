@@ -37,7 +37,9 @@ public:
     COORDINATE3(const COORDINATE3& copy) = default;
 
     COORDINATE3& operator=(const COORDINATE3& other) = default;
-
+    bool operator==(const COORDINATE3& other) {
+        return x == other.x && y == other.y && z == other.z;
+    }
     inline int X() {
         return x;
     }
@@ -87,7 +89,7 @@ public:
 class Map {
     unsigned char dungeon[MAP_X_SIZE][MAP_Y_SIZE][MAP_Z_SIZE];
 
-    COORDINATE3 playerSpace = COORDINATE3(0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF);
+    COORDINATE3 playerSpace = COORDINATE3(MAP_X_SIZE / 2, 0, 0);
 
     //I'd love to make it where like the UI goes on the left
     //and then the rest of the stuff happens
@@ -110,7 +112,7 @@ public:
         return dungeon[Xsp][Ysp][Zsp];
     };
 
-    int revealSquare_Coord3(COORDINATE3 coord) {
+    int revealSquare(COORDINATE3 coord) {
         int Xsp = coord.X();
         int Ysp = coord.Y();
         int Zsp = coord.Z();
@@ -122,15 +124,20 @@ public:
     };
 
     unsigned char getTile(int Xsp, int Ysp, int Zsp) {
-        return dungeon[Xsp][Ysp][Zsp];
+        return getTile({ Xsp, Ysp, Zsp });
     };
 
     unsigned char getTile(COORDINATE3 coord) {
-        return dungeon[coord.X()][coord.Y()][coord.Z()];
+        if (playerLocation() == coord)
+            return PLAYER_TILE_CHARACTER;
+        if (isSquareRevealed(coord))
+            return dungeon[coord.X()][coord.Y()][coord.Z()];
+        return UNSEEN_TILE_CHARACTER;
     };
 
-    unsigned char getTilePlayer(int Xsp, int Ysp, int Zsp) {
-        return dungeon[Xsp][Ysp][Zsp];
+    unsigned char getTilePlayer() {
+        COORDINATE3 coord = this->playerLocation();
+        return dungeon[coord.X()][coord.Y()][coord.Z()];
     };
 
     unsigned char getTilePlayer(COORDINATE3 coord) {
@@ -138,11 +145,13 @@ public:
     };
 
     bool isSquareRevealed(COORDINATE3 coord) {
-        return (dungeon[coord.X()][coord.Y()][coord.Z()] & UNSEEN_TILE) == UNSEEN_TILE;
+        return isSquareRevealed(coord.X(),coord.Y(),coord.Z());
+    }
+    bool isSquareRevealed(int Xsp, int Ysp, int Zsp) {
+        return (dungeon[Xsp][Ysp][Zsp] & UNSEEN_TILE) != UNSEEN_TILE;
     }
 
     COORDINATE3 playerLocation() {
-        // TODO: keep track of player's location
         return playerSpace;
     }
 

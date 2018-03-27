@@ -8,7 +8,7 @@ bool torchLogic(Game& game) {
     COORDINATE3 t = location.incrementX();
     if (t.isValid()) {
         if (map.isSquareRevealed(t)) {
-            map.revealSquare_Coord3(t);
+            map.revealSquare(t);
             activated = true;
         }
     }
@@ -16,7 +16,7 @@ bool torchLogic(Game& game) {
     t = location.decrementX();
     if (t.isValid()) {
         if (map.isSquareRevealed(t)) {
-            map.revealSquare_Coord3(t);
+            map.revealSquare(t);
             activated = true;
         }
     }
@@ -24,7 +24,7 @@ bool torchLogic(Game& game) {
     t = location.incrementY();
     if (t.isValid()) {
         if (map.isSquareRevealed(t)) {
-            map.revealSquare_Coord3(t);
+            map.revealSquare(t);
             activated = true;
         }
     }
@@ -32,7 +32,7 @@ bool torchLogic(Game& game) {
     t = location.decrementY();
     if (t.isValid()) {
         if (map.isSquareRevealed(t)) {
-            map.revealSquare_Coord3(t);
+            map.revealSquare(t);
             activated = true;
         }
     }
@@ -41,7 +41,7 @@ bool torchLogic(Game& game) {
 }
 
 Game::Game(std::string playerName, EntityStats playerStats)
-        : player(playerName, playerStats), map() {
+        : player(playerName, playerStats), map(), cheatMode(playerName == CHEATMODE_NAME){
 
     enemyNames.push_back("Slime");
     enemyNames.push_back("Goblin");
@@ -89,42 +89,43 @@ std::shared_ptr<Entity> Game::generateRandomEnemy(int floorLevel) {
 
     int p = rand() % (2 * floorLevel + 3) - floorLevel;
     if (p != 0) {
-        std::string weaponName = this->weaponNames[rand() % this->weaponNames.size()];
-        bool equipped = (rand() % (floorLevel+1)) == 0;
-
+        bool equipped = (rand() % (floorLevel + 1)) == 0;
         if (p < 0) {
             p = -p;
         }
         p += floorLevel / 3;
-        int value = (p - 1) * p;
-        if (value == 0)
-            value = p;
-        value *= 50;
-        auto weapon = std::shared_ptr<Inventory::Item>(new Inventory::WeaponItem(weaponName, p, value));
-        inv.addIfPossible(weapon);
+        inv.addIfPossible(this->generateWeapon(p));
         if (!equipped)
             inv.unequipCurrentWeapon();
     }
 
     p = rand() % (2 * floorLevel + 3) - floorLevel;
     if (p != 0) {
-        std::string armorName = this->armorNames[rand() % this->armorNames.size()];
         bool equipped = (rand() % (floorLevel + 1)) == 0;
-
         if (p < 0) {
             p = -p;
-            equipped = false;
         }
         p += floorLevel / 3;
-        int value = (p - 1) * p;
-        if (value == 0)
-            value = p;
-        value *= 75;
-        auto armor = std::shared_ptr<Inventory::Item>(new Inventory::ArmorItem(armorName, p, value));
-        inv.addIfPossible(armor);
+        inv.addIfPossible(this->generateArmor(p));
         if (!equipped)
             inv.unequipCurrentArmor();
     }
 
     return enemy;
+}
+std::shared_ptr<Inventory::ArmorItem> Game::generateArmor(int power) {
+    std::string armorName = this->armorNames[rand() % this->armorNames.size()];
+    int value = (power - 1) * power;
+    if (value == 0)
+        value = power;
+    value *= 75;
+    return std::shared_ptr<Inventory::ArmorItem>(new Inventory::ArmorItem(armorName, power, value));
+}
+std::shared_ptr<Inventory::WeaponItem> Game::generateWeapon(int power) {
+    std::string weaponName = this->weaponNames[rand() % this->weaponNames.size()];
+    int value = (power - 1) * power;
+    if (value == 0)
+        value = power;
+    value *= 50;
+    return std::shared_ptr<Inventory::WeaponItem>(new Inventory::WeaponItem(weaponName, power, value));
 }

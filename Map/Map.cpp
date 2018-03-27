@@ -1,11 +1,16 @@
 #include "Map.h"
+#include <string>
 
 //Returns false if generation failed.
 bool Map::generateLevel(int dLv, bool wrappingEnabled = false) {
     if (dLv > MAP_Z_SIZE) {
         return false;
     }
-
+    for (int i = 0; i < MAP_X_SIZE; i++) {
+        for (int j = 0; j < MAP_Y_SIZE; j++) {
+            dungeon[i][j][dLv] = MONSTER | UNSEEN_TILE;
+        }
+    }
     COORDINATE2 PU, PD;
     PU.XCo = PU.YCo = PD.XCo = PD.YCo = 0;
     while (PU.XCo == PD.XCo && PU.YCo == PD.YCo) {
@@ -24,7 +29,10 @@ bool Map::generateLevel(int dLv, bool wrappingEnabled = false) {
     else {
         dungeon[PD.XCo][PD.YCo][dLv] = GOALPOINT | UNSEEN_TILE;
     }
-    dungeon[PU.XCo][PU.YCo][dLv] = GO_HIGHER;
+    if (dLv != 0) {
+        dungeon[PU.XCo][PU.YCo][dLv] = GO_HIGHER;
+    }
+    /*
     int cX;
     int cY;
     cX = PU.XCo;
@@ -119,6 +127,22 @@ bool Map::generateLevel(int dLv, bool wrappingEnabled = false) {
                 }
                 dungeon[i][j][dLv] = spot;
             }
+        }
+    }*/
+    std::string randomTiles;
+    randomTiles += std::string(10, MONSTER | UNSEEN_TILE);
+    //randomTiles += std::string(2, MERCHANT | UNSEEN_TILE);
+    //randomTiles += std::string(1, WARP | UNSEEN_TILE);
+    //randomTiles += std::string(5, TRAP | UNSEEN_TILE);
+    //randomTiles += std::string(1, LOOT | UNSEEN_TILE);
+    //randomTiles += std::string(1, STATUE | UNSEEN_TILE);
+    //randomTiles += std::string(1, HEAL | UNSEEN_TILE);
+    randomTiles += std::string(15, FLOOR | UNSEEN_TILE);
+    const int tiles = randomTiles.size();
+    for (int i = 0; i < MAP_X_SIZE; i++) {
+        for (int j = 0; j < MAP_Y_SIZE; j++) {
+            if(dungeon[i][j][dLv] == (MONSTER | UNSEEN_TILE))
+            dungeon[i][j][dLv] = randomTiles[rand() % tiles];
         }
     }
 }

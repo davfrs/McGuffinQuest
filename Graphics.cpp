@@ -1,17 +1,17 @@
 #include "Graphics.h"
 
 void Graphics::redrawMap() {
-    int z = map.playerLocation().Z();
+    int z = game.map.playerLocation().Z();
 
     std::cout << std::string(50, '\n');
 
-    for (int y = 0; y <= MAP_Y_SIZE; y++) {
+    for (int y = 0; y <= MAP_Y_SIZE+1; y++) {
         std::cout << ']';
         for (int x = 0; x < MAP_X_SIZE; x++) {
-            if (y == 0 || y == MAP_Y_SIZE)
+            if (y == 0 || y == MAP_Y_SIZE+1)
                 std::cout << "=";
             else
-                std::cout << static_cast<char>(map.revealSquare(x, y, z));
+                std::cout << (game.map.getTile(x, y-1, z));
         }
         std::cout << "[  " << printInventory(y) << std::endl;
     }

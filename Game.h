@@ -11,11 +11,15 @@
 #include "Entity.h"
 #include "Player.h"
 
+const std::string CHEATMODE_NAME("Joe Bentley");
+
 class Game {
+    
     std::vector<std::string> enemyNames;
     std::vector<std::string> weaponNames;
     std::vector<std::string> armorNames;
     std::map<const std::string, std::shared_ptr<Inventory::ConsumableItem>> consumables;
+    bool cheatMode;
 public:
     Player player;
     Map map;
@@ -26,6 +30,8 @@ public:
     }
     std::shared_ptr<Inventory::ConsumableItem> getConsumableItem(const std::string name);
     std::shared_ptr<Entity> generateRandomEnemy(int floorLevel);
+    std::shared_ptr<Inventory::ArmorItem> generateArmor(int power);
+    std::shared_ptr<Inventory::WeaponItem> generateWeapon(int power);
 };
 
 #endif
