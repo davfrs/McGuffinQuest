@@ -6,26 +6,29 @@ void Entity::resetActiveStats() {
     this->activeStats.HP = hp;
 }
 
-bool Entity::attackEntity(Entity& other) {
+std::tuple<int, int, bool> Entity::attackEntity(Entity& other) {
     int damage = this->activeStats.strength;
     if (this->inv.hasActiveWeapon())
         damage += this->inv.getCurrentWeapon()->getPower();
-
-    return other.defendFromAttack(damage);
+    std::pair<int, bool> p = other.defendFromAttack(damage);
+    return { damage, p.first, p.second };
 }
 
-bool Entity::defendFromAttack(int damage) {
-    damage -= this->activeStats.defense;
+std::pair<int, bool> Entity::defendFromAttack(int damage) {
+    int defense = this->activeStats.defense;
     if (this->inv.hasActiveArmor())
-        damage -= this->inv.getCurrentArmor()->getPower();
+        defense -= this->inv.getCurrentArmor()->getPower();
+    damage -= defense;
 
-    return this->takeExactDamage(damage);
+    return { defense, this->takeExactDamage(damage) };
 }
 
 bool Entity::takeExactDamage(int damage) {
     if (damage <= 0)
         return false;
-    return (this->activeStats.HP -= damage) <= 0;
+    if ((this->activeStats.HP -= damage) < 0)
+        this->activeStats.HP = 0;
+    return this->activeStats.HP == 0;
 }
 
 bool Entity::heal(int health) {

@@ -22,7 +22,7 @@ class Entity {
     bool takeExactDamage(int damage);
 
 protected:
-    bool defendFromAttack(int damage);
+    std::pair<int, bool> defendFromAttack(int damage);
 
 public:
     Entity(std::string name, EntityStats stats)
@@ -32,7 +32,7 @@ public:
 
     void resetActiveStats();
 
-    bool attackEntity(Entity& other);//returns true if the target is now dead
+    std::tuple<int, int, bool> attackEntity(Entity& other);
 
     const std::string getName() const {
         return this->name;

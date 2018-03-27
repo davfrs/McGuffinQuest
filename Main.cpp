@@ -47,20 +47,23 @@ shared_ptr<Game> pregame() {
 }
 void enemyEncounter(Game& game) {
     shared_ptr<Entity>enemy = game.generateRandomEnemy(game.map.playerLocation().Z());
+    cout << "A " << enemy->getName() << " was in the room you entered!" << endl;
     while (game.player.getCurrentHP() > 0 && enemy->getCurrentHP() > 0) {
         char input = getCharInput();
+        std::tuple<int, int, bool> attack;
         switch (input) {
         case' ':
 
             enemy->attackEntity(game.player);
             break;
         case'e':
-            if (game.player.attackEntity(*enemy)) {
+            attack = game.player.attackEntity(*enemy);
+            if (std::get<2>(attack)) {
                 //enemy has died.
                 game.player.resetActiveStats();
                 auto couldNotFit = game.player.getInv().addAsPossible(enemy->getInv().dropEverything());
                 //too bad for the items that wouldn't fit.
-				game.map.__setTile(game.map.playerLocation(), FLOOR);
+                game.map.__setTile(game.map.playerLocation(), FLOOR);
             } else {
                 enemy->attackEntity(game.player);
             }
@@ -68,6 +71,7 @@ void enemyEncounter(Game& game) {
     }
 }
 int main() {
+    srand(static_cast<unsigned int>(time(nullptr)));
     shared_ptr<Game> game = pregame();
     Graphics graphicDisplay(*game);
     do {
@@ -120,6 +124,7 @@ int main() {
             char tile = game->map.updatePlayer(newLocation);
             switch (tile) {
             case MONSTER:
+                graphicDisplay.show(VIEW::VIEW_MAP);
                 enemyEncounter(*game);
                 break;
             case TRAP:
@@ -132,9 +137,16 @@ int main() {
         }
     } while ((game->player.getCurrentHP() > 0) && game->map.getTilePlayer() != GOALPOINT);
     graphicDisplay.show(VIEW::VIEW_MAP);
-    cout << "In the middle of the room you just entered, you see a cardboard box with \"McGuffin\" scribbled on it in black marker." << endl;
-    cout << "You open the box, but aren't sure what you're looking at. Regardless, this must be the prize you were sent to retrieve." << endl;
-    cout << "You pick up the box, and walk back the way you came to the old man. He thanks you, but it hardly seems this quest was" << endl;
-    cout<< "worth your time... (Press any key to close)" << endl;
+    if (game->map.getTilePlayer() == GOALPOINT) {
+        cout << "In the middle of the room you just entered, you see a cardboard box with \"McGuffin\" scribbled on it in black marker." << endl;
+        cout << "You open the box, but aren't sure what you're looking at. Regardless, this must be the prize you were sent to retrieve." << endl;
+        cout << "You pick up the box, and walk back the way you came to the old man. He thanks you, but it hardly seems this quest was" << endl;
+        cout << "worth your time... (Press any key to close)" << endl;
+    } else {
+        cout << "You find youself unable to move. You expected more pain as you lie on the ground, but the vast amount of adrenaline in" << endl;
+        cout << "your body numbs it... for now. Eventually, enemies will start wandering into the room you are in, drawn by the smell of" << endl;
+        cout << "blood, but you will already have died. \"Perhaps this quest wasn't below my skill level after all,\" you think to" << endl;
+        cout << "yourself. (Press any key to close)" << endl;
+    }
     waitForKeyboard();
 }

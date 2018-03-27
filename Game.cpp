@@ -47,7 +47,10 @@ bool useAround(Game& game, COORDINATE3 location, std::function<bool(Game&, COORD
 
 Game::Game(std::string playerName, EntityStats playerStats)
         : player(playerName, playerStats), map(), cheatMode(playerName == CHEATMODE_NAME){
-
+    if (cheatMode) {
+        //we don't want to go all the way to the top floor
+        this->map.__setTile({ 0, 0, 0 }, GOALPOINT | UNSEEN_TILE);
+    }
     enemyNames.push_back("Slime");
     enemyNames.push_back("Goblin");
     enemyNames.push_back("Spider");
@@ -121,10 +124,13 @@ std::shared_ptr<Entity> Game::generateRandomEnemy(int floorLevel) {
     if (this->cheatMode) {
         std::shared_ptr<Inventory::WeaponItem> cheatSword(new Inventory::WeaponItem("Excalibur", 200, 0));
         if (inv.hasActiveWeapon()) {
+            inv.removeCurrentWeapon();
             inv.addIfPossible(cheatSword);
+            inv.unequipCurrentWeapon();
         } else {
-            inv.addIfPossible(this->generateWeapon(1));
+            //inv.addIfPossible(this->generateWeapon(1));
             inv.addIfPossible(cheatSword);
+            inv.unequipCurrentWeapon();
         }
         //std::shared_ptr<Inventory::ConsumableItem> hyperTorch(new Inventory::ConsumableItem_Lambda([this]() { return useAround(*this, this->map.playerLocation(), *torchLogic); }, "hypertorch", "Reveals an entire floor!", 0));
         this->cheatMode = false;

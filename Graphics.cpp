@@ -45,8 +45,7 @@ std::string Graphics::printInventory(int line) {
     case 3:
         return "";
     case 4:
-        // TODO: get player's health
-        return "Health: " + std::to_string(100);
+        return "Health: " + std::to_string(this->game.player.getCurrentHP()) + " / " + std::to_string(this->game.player.getMaxHP());
     case 5:
         return "";
     case 6:

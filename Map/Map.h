@@ -115,9 +115,8 @@ public:
     Map() {
         for (int i = 0;i < MAP_Z_SIZE;i++)
             generated[i] = false;
-        srand(static_cast<unsigned int>(time(nullptr)));
         generateLevel(playerLocation().Z());
-
+        this->__setTile(playerLocation(), FLOOR);
     }
 
     int revealSquare(int Xsp, int Ysp, int Zsp) {
@@ -137,9 +136,9 @@ public:
         //strip unseen tile bit
         return dungeon[Xsp][Ysp][Zsp];
     };
-	void __setTile(COORDINATE3 coord, unsigned char tile) {
-		dungeon[coord.X()][coord.Y()][coord.Z()] = tile;
-	}
+    void __setTile(COORDINATE3 coord, unsigned char tile) {
+        dungeon[coord.X()][coord.Y()][coord.Z()] = tile;
+    }
     unsigned char getTile(int Xsp, int Ysp, int Zsp) {
         return getTile({ Xsp, Ysp, Zsp });
     };
