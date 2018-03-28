@@ -50,6 +50,13 @@ public:
         return this->originalStats.HP;
     }
 
+    int getCurrentBaseAttack() const {
+        return this->activeStats.strength;
+    }
+
+    int getCurrentBaseDefense() const {
+        return this->activeStats.defense;
+    }
     bool heal(int health);
 };
 

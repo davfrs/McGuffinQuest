@@ -105,22 +105,22 @@ namespace Inventory {
 
         friend std::ostream& operator<<(std::ostream& out, InventoryData& inv);
 
-		std::string getCurrentWeaponString() {
-			std::stringstream buff;
-			if (this->hasActiveWeapon())
-				buff << this->getCurrentWeapon();
-			else
-				buff << "no active weapon";
-			return buff.str();
-		}
-		std::string getCurrentArmorString() {
-			std::stringstream buff;
-			if (this->hasActiveArmor())
-				buff << this->getCurrentArmor();
-			else
-				buff << "no active armror";
-			return buff.str();
-		}
+        std::string getCurrentWeaponString() {
+            std::stringstream buff;
+            if (this->hasActiveWeapon())
+                buff << *this->getCurrentWeapon();
+            else
+                buff << "no active weapon";
+            return buff.str();
+        }
+        std::string getCurrentArmorString() {
+            std::stringstream buff;
+            if (this->hasActiveArmor())
+                buff << *this->getCurrentArmor();
+            else
+                buff << "no active armor";
+            return buff.str();
+        }
         void printWeapons(std::ostream& out) const;
 
         void printArmors(std::ostream& out) const;

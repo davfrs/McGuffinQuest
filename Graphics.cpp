@@ -34,7 +34,8 @@ std::string Graphics::printInventory(int line) {
     const char separatorChar = '#';
     unsigned long separatorLength = 76 - MAP_X_SIZE;
     const std::string separator = std::string(separatorLength, separatorChar);
-	Inventory::InventoryData& inv = this->game.player.getInv();
+    Inventory::InventoryData& inv = this->game.player.getInv();
+    std::string temp;
     switch (line) {
     case 0:
         return separator;
@@ -43,21 +44,33 @@ std::string Graphics::printInventory(int line) {
     case 2:
         return separator;
     case 3:
-        return "";
-	case 3:
-		return this->game.player.getName();
-	case 4:
-		return "" + std::to_string(inv.getHeldMoney()) + ' ' + Inventory::MONEYNAME;
+        return this->game.player.getName();
+    case 4:
+        return "" + std::to_string(inv.getHeldMoney()) + ' ' + Inventory::MONEYNAME;
     case 5:
         return "Health: " + std::to_string(this->game.player.getCurrentHP()) + " / " + std::to_string(this->game.player.getMaxHP());
     case 6:
-        return "";
+        temp = "Attack: " + std::to_string(this->game.player.getCurrentBaseAttack());
+        if (inv.hasActiveWeapon())
+            temp += '+' + std::to_string(inv.getCurrentWeapon()->getPower());
+        return temp;
     case 7:
+        temp = "Defense: " + std::to_string(this->game.player.getCurrentBaseDefense());
+        if (inv.hasActiveArmor())
+            temp += '+' + std::to_string(inv.getCurrentArmor()->getPower());
+        return temp;
+    case 8:
+        return "";
+    case 9:
         return "Items:";
-	case 8:
-		return inv.getCurrentWeaponString();
-	case 9:
-		return inv.getCurrentArmorString();
+    case 10:
+        return inv.getCurrentWeaponString();
+    case 11:
+        return inv.getCurrentArmorString();
+    case 12:
+        return "";
+    case 13:
+
     default:
         int itemNumber = line - 10;
         // TODO: get player's items and display their name

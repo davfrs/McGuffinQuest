@@ -208,11 +208,11 @@ namespace Inventory {
     std::ostream& operator<<(std::ostream& out, InventoryData& inv) {
         out << inv.money << ' ' << MONEYNAME << std::endl;
 
-		out << inv.getCurrentWeaponString();
+        out << inv.getCurrentWeaponString();
         
         out << std::endl;
 
-		out << inv.getCurrentArmorString();
+        out << inv.getCurrentArmorString();
         out << std::endl;
 
         out << "inventory space: " << inv.currentInventoryCount << '/' << inv.inventoryLimit
