@@ -9,9 +9,9 @@ bool Map::generateLevel(int dLv, bool wrappingEnabled) {
     if (generated[dLv])
         return true;
     generated[dLv] = true;
-    for (int i = 0; i < MAP_X_SIZE; i++) {
-        for (int j = 0; j < MAP_Y_SIZE; j++) {
-            dungeon[i][j][dLv] = MONSTER | UNSEEN_TILE;
+    for (auto &i : dungeon) {
+        for (auto &j : i) {
+            j[dLv] = MONSTER | UNSEEN_TILE;
         }
     }
     COORDINATE2 PS = this->playerLocation().toCOORDINATE2();

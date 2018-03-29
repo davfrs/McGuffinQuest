@@ -26,8 +26,7 @@ namespace Inventory {
         }
 
     public:
-        virtual ~Item() {
-        };
+        virtual ~Item() = default;;
 
         inline ItemType getType() const {
             return type;

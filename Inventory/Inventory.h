@@ -32,14 +32,13 @@ namespace Inventory {
 
     public:
         using ItemPointerContainer = std::vector<std::shared_ptr<Item>>;
-
-        InventoryData(int inventoryLimit)
+    
+        explicit InventoryData(int inventoryLimit)
                 : inventoryLimit(inventoryLimit), currentInventoryCount(0), money(0) {
         }
 
-        ~InventoryData() {
-        }
-
+        ~InventoryData() = default;
+    
         inline unsigned long getHeldMoney() {
             return money;
         }

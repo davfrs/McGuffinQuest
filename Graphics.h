@@ -39,7 +39,7 @@ private:
     void printConsumablesList();
     void show(View view, std::shared_ptr<Entity> entity, bool merchant);
 public:
-    Graphics(Game& game) : game(game), combatTextCount(0) {}
+    explicit Graphics(Game& game) : game(game), combatTextCount(0) {}
     void show(View view, std::shared_ptr<Entity> entity) {
         return show(view, entity, false);
     }

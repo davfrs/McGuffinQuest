@@ -342,6 +342,9 @@ bool browseInventory(Game &game, Graphics &graphicDisplay, bool limitOneAction, 
             
             break;
         }
+        case VIEW_MAP:break;
+        case VIEW_CONSUMABLES_LIST:break;
+        case VIEW_COMBAT:break;
         }
         finished |= (limitOneAction && actions != 0);
     }
@@ -445,8 +448,8 @@ int main() {
             break;
         }
         if (newLocation.isValid() && oldLocation != newLocation) {
-            char tile = game->map.updatePlayer(newLocation);
-            switch (tile) {
+            char newTile = game->map.updatePlayer(newLocation);
+            switch (newTile) {
             case MONSTER:
                 //graphicDisplay.show(View::VIEW_MAP);
                 enemyEncounter(*game, graphicDisplay);

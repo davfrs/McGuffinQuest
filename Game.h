@@ -28,9 +28,9 @@ public:
 
     Game(std::string playerName, ENTITYSTATS playerStats);
 
-    virtual ~Game() {
-    }
-    std::shared_ptr<Inventory::ConsumableItem> getConsumableItem(const std::string name);
+    virtual ~Game() = default;
+    
+    std::shared_ptr<Inventory::ConsumableItem> getConsumableItem(std::string name);
     std::shared_ptr<Entity> generateRandomEnemy(int floorLevel);
     std::shared_ptr<Inventory::ArmorItem> generateArmor(int power);
     std::shared_ptr<Inventory::WeaponItem> generateWeapon(int power);
