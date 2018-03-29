@@ -18,7 +18,9 @@ class Game {
     std::vector<std::string> enemyNames;
     std::vector<std::string> weaponNames;
     std::vector<std::string> armorNames;
+    std::vector<std::shared_ptr<Inventory::ConsumableItem>> consumableList;
     std::map<const std::string, std::shared_ptr<Inventory::ConsumableItem>> consumables;
+    void registerConsumable(std::shared_ptr<Inventory::ConsumableItem> consumable);
     bool cheatMode;
 public:
     Player player;
@@ -33,11 +35,7 @@ public:
     std::shared_ptr<Inventory::ArmorItem> generateArmor(int power);
     std::shared_ptr<Inventory::WeaponItem> generateWeapon(int power);
     std::vector<std::shared_ptr<Inventory::ConsumableItem>> getConsumables() {
-        std::vector<std::shared_ptr<Inventory::ConsumableItem>> list;
-        for (auto e : this->consumables) {
-            list.push_back(e.second);
-        }
-        return list;
+        return consumableList;
     }
 };
 

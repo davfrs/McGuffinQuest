@@ -184,12 +184,19 @@ namespace Inventory {
         return ret;
     }
 
-    std::shared_ptr<ConsumableItem> InventoryData::removeConsumable(int consumableNumber) {
+    std::shared_ptr<ConsumableItem> InventoryData::removeConsumable(int consumableNumber, int count) {
         if (this->consumables.size() <= (unsigned) consumableNumber || consumableNumber < 0)
             return std::shared_ptr<ConsumableItem>();
         std::shared_ptr<ConsumableItem> ret = this->consumables[consumableNumber];
-        this->consumables.erase(this->consumables.begin() + consumableNumber);
-        this->currentInventoryCount--;
+        if (count < 0 || count >= ret->getCount()) {
+            this->consumables.erase(this->consumables.begin() + consumableNumber);
+            this->currentInventoryCount--;
+        } else {
+            ret->setUses(ret->getCount() - count);
+            ret = ret->clone();
+            ret->setUses(count);
+        }
+        
         return ret;
     }
 

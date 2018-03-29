@@ -101,7 +101,7 @@ namespace Inventory {
 
         std::shared_ptr<ArmorItem> removeArmor(int number);
 
-        std::shared_ptr<ConsumableItem> removeConsumable(int number);
+        std::shared_ptr<ConsumableItem> removeConsumable(int number, int count =-1);
 
         friend std::ostream& operator<<(std::ostream& out, InventoryData& inv);
 

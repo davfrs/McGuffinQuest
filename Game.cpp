@@ -2,7 +2,7 @@
 #include <functional>
 
 bool torchLogic(Game& game, COORDINATE3 coord) {
-    if (game.map.isSquareRevealed(coord)) {
+    if (!game.map.isSquareRevealed(coord)) {
         game.map.revealSquare(coord);
         return true;
     }
@@ -13,9 +13,16 @@ bool useAround(Game& game, COORDINATE3 location, std::function<bool(Game&, COORD
     Map map = game.map;
     bool activated = false;
 
-    COORDINATE3 t = location.incrementX();
+    COORDINATE3 t = location;
     if (t.isValid()) {
         if (useFunction(game, t)){
+            activated = true;
+        }
+    }
+    
+    t = location.incrementX();
+    if (t.isValid()) {
+        if (useFunction(game, t)) {
             activated = true;
         }
     }
@@ -70,17 +77,26 @@ Game::Game(std::string playerName, EntityStats playerStats)
     armorNames.push_back("Old Chainmail");
     armorNames.push_back("Beautiful Cloth");
 
-    consumables.emplace(TORCH_NAME, std::shared_ptr<Inventory::ConsumableItem>(new Inventory::ConsumableItem_Lambda([this]() { return useAround(*this, this->map.playerLocation(),*torchLogic); }, TORCH_NAME, TORCH_DESC, TORCH_WORTH)));
-    consumables.emplace(SUPERTORCH_NAME, std::shared_ptr<Inventory::ConsumableItem>(new Inventory::ConsumableItem_Lambda([this]() { return useAround(*this, this->map.playerLocation(), [](Game& game,COORDINATE3 location) { return useAround(game, location, *torchLogic); }); }, SUPERTORCH_NAME, SUPERTORCH_DESC, SUPERTORCH_WORTH)));
-    consumables.emplace(MEGATORCH_NAME, std::shared_ptr<Inventory::ConsumableItem>(new Inventory::ConsumableItem_Lambda([this]() { return useAround(*this, this->map.playerLocation(), [](Game& game, COORDINATE3 location) { return useAround(game, location, [](Game& game, COORDINATE3 location) { return useAround(game, location, *torchLogic); } ); }); }, MEGATORCH_NAME, MEGATORCH_DESC, MEGATORCH_WORTH)));
-    consumables.emplace(POTION_NAME, std::shared_ptr<Inventory::ConsumableItem>(new Inventory::ConsumableItem_Lambda([this]() { return player.heal(POTION_HEAL); }, POTION_NAME, POTION_DESC, POTION_WORTH)));
-    consumables.emplace(MAXPOTION_NAME, std::shared_ptr<Inventory::ConsumableItem>(new Inventory::ConsumableItem_Lambda([this]() { return player.heal(player.getMaxHP()); }, MAXPOTION_NAME, MAXPOTION_DESC, MAXPOTION_WORTH)));
+    registerConsumable(std::shared_ptr<Inventory::ConsumableItem>(new Inventory::ConsumableItem_Lambda([this]() { return useAround(*this, this->map.playerLocation(),*torchLogic); }, TORCH_NAME, TORCH_DESC, TORCH_WORTH)));
+    registerConsumable(std::shared_ptr<Inventory::ConsumableItem>(new Inventory::ConsumableItem_Lambda([this]() { return useAround(*this, this->map.playerLocation(), [](Game& game,COORDINATE3 location) { return useAround(game, location, *torchLogic); }); }, SUPERTORCH_NAME, SUPERTORCH_DESC, SUPERTORCH_WORTH)));
+    registerConsumable(std::shared_ptr<Inventory::ConsumableItem>(new Inventory::ConsumableItem_Lambda([this]() { return useAround(*this, this->map.playerLocation(), [](Game& game, COORDINATE3 location) { return useAround(game, location, [](Game& game, COORDINATE3 location) { return useAround(game, location, *torchLogic); } ); }); }, MEGATORCH_NAME, MEGATORCH_DESC, MEGATORCH_WORTH)));
+    registerConsumable(std::shared_ptr<Inventory::ConsumableItem>(new Inventory::ConsumableItem_Lambda([this]() { return player.heal(POTION_HEAL); }, POTION_NAME, POTION_DESC, POTION_WORTH)));
+    registerConsumable(std::shared_ptr<Inventory::ConsumableItem>(new Inventory::ConsumableItem_Lambda([this]() { return player.heal(player.getMaxHP()); }, MAXPOTION_NAME, MAXPOTION_DESC, MAXPOTION_WORTH)));
+
+    auto potion = this->getConsumableItem(POTION_NAME);
+    potion->setUses(2);
+    player.getInv().addIfPossible(potion);
+    player.getInv().addIfPossible(this->getConsumableItem(MEGATORCH_NAME));
+}
+void Game::registerConsumable(std::shared_ptr<Inventory::ConsumableItem> consumable) {
+    consumables.emplace(consumable->getName(), consumable);
+    consumableList.push_back(consumable);
 }
 
 std::shared_ptr<Inventory::ConsumableItem> Game::getConsumableItem(const std::string name) {
-    auto potionLoc = this->consumables.find(POTION_NAME);
-    if (potionLoc != this->consumables.end())
-        return potionLoc->second->clone();
+    auto consumableLoc = this->consumables.find(name);
+    if (consumableLoc != this->consumables.end())
+        return consumableLoc->second->clone();
     return std::shared_ptr<Inventory::ConsumableItem>();
 }
 
