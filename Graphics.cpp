@@ -149,7 +149,7 @@ void Graphics::printConsumablesList() {
     }
 }
 
-void Graphics::show(VIEW view, std::shared_ptr<Entity> entity, bool merchant = false) {
+void Graphics::show(View view, std::shared_ptr<Entity> entity, bool merchant = false) {
     switch (view) {
     case VIEW_MAP:
         drawMap(merchant);

@@ -110,7 +110,7 @@ bool confirmPurchase(Game &game, unsigned long price) {
 
 bool browseInventory(Game &game, Graphics &graphicDisplay, bool limitOneAction, bool merchant) {
     std::cout << std::string(50, '\n');
-    VIEW currentView = VIEW_INVENTORY;
+    View currentView = VIEW_INVENTORY;
     int actions = 0;
     bool finished = false;
     while (!finished) {
@@ -284,7 +284,7 @@ bool browseInventory(Game &game, Graphics &graphicDisplay, bool limitOneAction, 
                 break;
             }
             if (inputstring == "list") {
-                graphicDisplay.show(VIEW::VIEW_CONSUMABLES_LIST);
+                graphicDisplay.show(View::VIEW_CONSUMABLES_LIST);
                 cout << "(press any key to return to Consumables Menu)";
                 getCharInput();
                 break;
@@ -396,7 +396,7 @@ int main() {
     shared_ptr<Game> game = pregame();
     Graphics graphicDisplay(*game);
     do {
-        graphicDisplay.show(VIEW::VIEW_MAP, game->map.getTilePlayer() == MERCHANT);
+        graphicDisplay.show(View::VIEW_MAP, game->map.getTilePlayer() == MERCHANT);
         COORDINATE3 oldLocation = game->map.playerLocation();
         COORDINATE3 newLocation = oldLocation;
         cout << "Move with '" << static_cast<char>(CHAR_UP) << static_cast<char>(CHAR_LEFT ) << static_cast<char>(CHAR_DOWN ) << static_cast<char>(CHAR_RIGHT ) << "'. Press '" << static_cast<char>(CHAR_ACTION ) << "' to perform action or '" << static_cast<char>(CHAR_INVENTORY) << "' to view inventory." << endl;
@@ -447,7 +447,7 @@ int main() {
             char tile = game->map.updatePlayer(newLocation);
             switch (tile) {
             case MONSTER:
-                //graphicDisplay.show(VIEW::VIEW_MAP);
+                //graphicDisplay.show(View::VIEW_MAP);
                 enemyEncounter(*game, graphicDisplay);
                 break;
             case TRAP:

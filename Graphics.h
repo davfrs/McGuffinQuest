@@ -8,7 +8,7 @@
 #include "Game.h"
 #include "Map/Map.h"
  
-enum VIEW {
+enum View {
     VIEW_MAP,
     VIEW_INVENTORY,
     VIEW_INVENTORY_WEAPONS,
@@ -37,16 +37,16 @@ private:
     void printInventory_Armors(bool merchant);
     void printInventory_Consumables(bool merchant);
     void printConsumablesList();
-    void show(VIEW view, std::shared_ptr<Entity> entity, bool merchant);
+    void show(View view, std::shared_ptr<Entity> entity, bool merchant);
 public:
     Graphics(Game& game) : game(game), combatTextCount(0) {}
-    void show(VIEW view, std::shared_ptr<Entity> entity) {
+    void show(View view, std::shared_ptr<Entity> entity) {
         return show(view, entity, false);
     }
-    void show(VIEW view, bool merchant) {
+    void show(View view, bool merchant) {
         return show(view, 0, merchant);
     }
-    void show(VIEW view) {
+    void show(View view) {
         return show(view, 0, false);
     }
     void addCombatText(std::string text);

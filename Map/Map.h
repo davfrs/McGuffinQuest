@@ -11,7 +11,7 @@
 
 #include "dungeonbytes.h"
 
-enum DIMENSIONS {
+enum Dimensions {
     MAP_X_SIZE = 64,
     MAP_Y_SIZE = 22,
     MAP_Z_SIZE = 8
