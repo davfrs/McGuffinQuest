@@ -6,7 +6,7 @@
 #include <vector>
 #include <memory>
 
-#include "Inventory/Inventory.h"
+#include "Inventory.h"
 
 const std::string TORCH_NAME("torch");
 const std::string SUPERTORCH_NAME("supertorch");

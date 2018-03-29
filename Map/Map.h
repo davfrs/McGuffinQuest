@@ -9,7 +9,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "../dungeonbytes.h"
+#include "dungeonbytes.h"
 
 enum DIMENSIONS {
     MAP_X_SIZE = 64,

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 
-#include "Entity.h"
+#include "Entities/Entity.h"
 #include "Game.h"
 #include "Map/Map.h"
  
