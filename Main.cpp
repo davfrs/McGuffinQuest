@@ -17,7 +17,7 @@ enum MeaningfulCharPresses {
     CHAR_LEFT = 'a',
     CHAR_RIGHT = 'd',
     CHAR_ACTION = 'e',
-    CHAR_INVENTORY = ' '
+    CHAR_INVENTORY = 'i'
 };
 
 // KEYBOARD INPUT STUFF
@@ -356,18 +356,19 @@ void enemyEncounter(Game &game, Graphics &graphicDisplay) {
     graphicDisplay.clearCombatText();
     graphicDisplay.addCombatText("A " + enemy->getName() + " was in the room you entered!");
     while (game.player.getCurrentHP() > 0 && enemy->getCurrentHP() > 0) {
-        graphicDisplay.addCombatText("Press e to attack or (space) to view inventory");
+        graphicDisplay.addCombatText("Press '" + string(1, static_cast<char>(CHAR_ACTION)) + "' to attack or '" +
+                                             string(1, static_cast<char>(CHAR_INVENTORY)) + "' to view inventory");
         graphicDisplay.show(VIEW_COMBAT, enemy);
         getCharInput(); // not sure why
         char input = getCharInput();
         switch (input) {
-        case ' ':
+        case CHAR_INVENTORY:
             if (browseInventory(game, graphicDisplay, true, false)) {
                 tie<int, int, bool>(attack, defense, kill) = enemy->attackEntity(game.player);
                 graphicDisplay.addCombatText("The enemy " + enemy->getName() + " attacked with " + std::to_string(attack) + " strength, but you blocked with " + std::to_string(defense) + " defense. Damage taken: " + std::to_string(attack - defense));
             }
             break;
-        case 'e':
+        case CHAR_ACTION:
             tie<int, int, bool>(attack, defense, kill) = game.player.attackEntity(*enemy);
             graphicDisplay.addCombatText("You attacked with " + std::to_string(attack) + " strength, but the enemy " + enemy->getName() + " blocked with " + std::to_string(defense) + " defense. Damage dealt: " + std::to_string(attack - defense));
             if (kill) {
