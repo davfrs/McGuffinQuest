@@ -46,7 +46,7 @@ public:
 const int RANDOMIZABLE_TERRAIN_TYPES = 7; //non-floor types
 const char UNSEEN_TILE_CHARACTER = ' ';
 const char PLAYER_TILE_CHARACTER = 'X';
-enum DUNGEONBYTES
+enum DungeonBytes
 {
     UNSEEN_TILE = 0x80,
     GO_DEEPER = '>',

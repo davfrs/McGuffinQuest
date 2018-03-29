@@ -6,11 +6,7 @@
 
 class Player : public Entity {
 public:
-    Player(std::string name, EntityStats stats) : Entity(name, stats) {
-    }
-
-    int Status();
-
+    Player(std::string name, ENTITYSTATS stats) : Entity(name, stats) { }
 
 };
 

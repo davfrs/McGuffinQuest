@@ -26,7 +26,7 @@ public:
     Player player;
     Map map;
 
-    Game(std::string playerName, EntityStats playerStats);
+    Game(std::string playerName, ENTITYSTATS playerStats);
 
     virtual ~Game() {
     }

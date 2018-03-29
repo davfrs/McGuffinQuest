@@ -52,8 +52,7 @@ bool useAround(Game& game, COORDINATE3 location, std::function<bool(Game&, COORD
 }
 
 
-Game::Game(std::string playerName, EntityStats playerStats)
-        : player(playerName, playerStats), map(), cheatMode(playerName == CHEATMODE_NAME){
+Game::Game(std::string playerName, ENTITYSTATS playerStats) : player(playerName, playerStats), map(), cheatMode(playerName == CHEATMODE_NAME){
     enemyNames.push_back("Slime");
     enemyNames.push_back("Goblin");
     enemyNames.push_back("Spider");
@@ -114,7 +113,7 @@ std::shared_ptr<Inventory::ConsumableItem> Game::getConsumableItem(const std::st
 }
 
 std::shared_ptr<Entity> Game::generateRandomEnemy(int floorLevel) {
-    EntityStats baseStats;
+    ENTITYSTATS baseStats;
     std::string name = this->enemyNames[rand() % this->enemyNames.size()];
     floorLevel *= 3;
     //yes, I did just randomly come up with these equations.

@@ -120,7 +120,7 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
             if (tokenizedInput[0] == "equip") {
                 try {
                     number = std::stoi(tokenizedInput[1]);
-                } catch (invalid_argument& e) {
+                } catch (invalid_argument&) {
                     break;
                 }
                 if (game.player.getInv().swapActiveWeapon(number-1))
@@ -135,7 +135,7 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                 }
                 try {
                     number = std::stoi(tokenizedInput[1]);
-                } catch (invalid_argument& e) {
+                } catch (invalid_argument&) {
                     break;
                 }
                 if (game.player.getInv().removeWeapon(number - 1))
@@ -145,7 +145,7 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
             if (tokenizedInput[0] == "buy" && merchant){
                 try {
                     number = std::stoi(tokenizedInput[1]);
-                } catch (invalid_argument& e) {
+                } catch (invalid_argument&) {
                     break;
                 }
                 item = game.generateWeapon(number);
@@ -165,7 +165,7 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                 }
                 try {
                     number = std::stoi(tokenizedInput[1]);
-                } catch (invalid_argument& e) {
+                } catch (invalid_argument&) {
                     break;
                 }
                 if (item = game.player.getInv().removeWeapon(number - 1)) {
@@ -187,7 +187,7 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
             if (tokenizedInput[0] == "equip") {
                 try {
                     number = std::stoi(tokenizedInput[1]);
-                } catch (invalid_argument& e) {
+                } catch (invalid_argument&) {
                     break;
                 }
                 if (game.player.getInv().swapActiveArmor(number - 1))
@@ -202,7 +202,7 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                 }
                 try {
                     number = std::stoi(tokenizedInput[1]);
-                } catch (invalid_argument& e) {
+                } catch (invalid_argument&) {
                     break;
                 }
                 if (game.player.getInv().removeArmor(number - 1))
@@ -212,7 +212,7 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
             if (tokenizedInput[0] == "buy" && merchant) {
                 try {
                     number = std::stoi(tokenizedInput[1]);
-                } catch (invalid_argument& e) {
+                } catch (invalid_argument&) {
                     break;
                 }
                 item = game.generateArmor(number);
@@ -232,7 +232,7 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                 }
                 try {
                     number = std::stoi(tokenizedInput[1]);
-                } catch (invalid_argument& e) {
+                } catch (invalid_argument&) {
                     break;
                 }
                 if (item = game.player.getInv().removeArmor(number - 1)) {
@@ -258,7 +258,7 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
             if (tokenizedInput.size() == 2) {
                 try {
                     number = std::stoi(tokenizedInput[1]);
-                } catch (invalid_argument& e) {
+                } catch (invalid_argument&) {
                     break;
                 }
                 if (tokenizedInput[0] == "use") {
@@ -278,7 +278,7 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                         break;
                     try {
                         number2 = std::stoi(tokenizedInput[2]);
-                    } catch (invalid_argument& e) {
+                    } catch (invalid_argument&) {
                         break;
                     }
                     consumable->setUses(number2);
@@ -294,7 +294,7 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                     try {
                         number = std::stoi(tokenizedInput[1]);
                         number2 = std::stoi(tokenizedInput[2]);
-                    } catch (invalid_argument& e) {
+                    } catch (invalid_argument&) {
                         break;
                     }
                     if (consumable = game.player.getInv().removeConsumable(number - 1, number2)) {
