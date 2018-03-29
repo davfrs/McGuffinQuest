@@ -21,7 +21,7 @@ void Graphics::drawMap(bool merchant = false) {
     }
     std::cout << std::endl;
     if (merchant)
-        std::cout << "You discovered a wandering merchant! press e to trade" << std::endl;
+        std::cout << "You discovered a wandering merchant! press action key to trade" << std::endl;
     
 }
 
