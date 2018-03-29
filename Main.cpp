@@ -107,7 +107,8 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                 finished = true;
                 break;
             }
-            break;}
+            break;
+		}
         case VIEW_INVENTORY_WEAPONS:{
             std::getline(cin, inputstring);
             if (inputstring == "back") {
@@ -174,7 +175,8 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                 }
                 break;
             }
-            break;}
+            break;
+		}
         case VIEW_INVENTORY_ARMORS: {
             std::getline(cin, inputstring);
             if (inputstring == "back") {
@@ -241,7 +243,8 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                 }
                 break;
             }
-            break;}
+            break;
+		}
         case VIEW_INVENTORY_CONSUMABLES: {
             std::getline(cin, inputstring);
             if (inputstring == "back") {
@@ -305,7 +308,8 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                 }
             }
 
-            break;}
+            break;
+		}
         }
         finished |= (limitOneAction && actions != 0);
     }
