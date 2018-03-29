@@ -60,15 +60,15 @@ Game::Game(std::string playerName, EntityStats playerStats)
     enemyNames.push_back("Giant Ant");
     enemyNames.push_back("Bandit");
 
-    weaponNames.push_back("rusty axe");
-    weaponNames.push_back("chipped sword");
-    weaponNames.push_back("antique dagger");
-    weaponNames.push_back("dull claymore");
-    weaponNames.push_back("broken mace");
-    weaponNames.push_back("slime's bone");
+    weaponNames.push_back("Rusty Axe");
+    weaponNames.push_back("Chipped Sword");
+    weaponNames.push_back("Antique Dagger");
+    weaponNames.push_back("Dull cClaymore");
+    weaponNames.push_back("Broken Mace");
+    weaponNames.push_back("Slime's Bone");
 
-    armorNames.push_back("old chainmail");
-    armorNames.push_back("beautiful cloth");
+    armorNames.push_back("Old Chainmail");
+    armorNames.push_back("Beautiful Cloth");
 
     consumables.emplace(TORCH_NAME, std::shared_ptr<Inventory::ConsumableItem>(new Inventory::ConsumableItem_Lambda([this]() { return useAround(*this, this->map.playerLocation(),*torchLogic); }, TORCH_NAME, TORCH_DESC, TORCH_WORTH)));
     consumables.emplace(SUPERTORCH_NAME, std::shared_ptr<Inventory::ConsumableItem>(new Inventory::ConsumableItem_Lambda([this]() { return useAround(*this, this->map.playerLocation(), [](Game& game,COORDINATE3 location) { return useAround(game, location, *torchLogic); }); }, SUPERTORCH_NAME, SUPERTORCH_DESC, SUPERTORCH_WORTH)));

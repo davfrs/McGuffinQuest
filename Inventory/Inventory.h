@@ -108,7 +108,7 @@ namespace Inventory {
         std::string getCurrentWeaponString() {
             std::stringstream buff;
             if (this->hasActiveWeapon())
-                buff << *this->getCurrentWeapon();
+                buff << *this->getCurrentWeapon() << " (+" << this->getCurrentWeapon()->getPower() << ')';
             else
                 buff << "no active weapon";
             return buff.str();
@@ -116,7 +116,7 @@ namespace Inventory {
         std::string getCurrentArmorString() {
             std::stringstream buff;
             if (this->hasActiveArmor())
-                buff << *this->getCurrentArmor();
+                buff << *this->getCurrentArmor() << " (+" << this->getCurrentArmor()->getPower() << ')';
             else
                 buff << "no active armor";
             return buff.str();

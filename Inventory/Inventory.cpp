@@ -258,7 +258,7 @@ namespace Inventory {
     std::vector<std::shared_ptr<Item>> InventoryData::dropEverything() {
         std::vector<std::shared_ptr<Item>> ret;
         if (this->money != 0) {
-            ret.push_back(std::make_shared<Item>(MoneyItem(this->money)));
+            ret.push_back(std::shared_ptr<Item>(new MoneyItem(this->money)));
             this->money = 0;
         }
         if (this->currentArmor != nullptr) {
