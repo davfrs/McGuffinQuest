@@ -87,12 +87,12 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
             }
             break;
         case VIEW_INVENTORY_WEAPONS:
-            cin >> inputstring;
+			std::getline(cin, inputstring);
             if (inputstring == "back") {
                 currentView = VIEW_INVENTORY;
                 break;
             }
-            tokenizedInput = tokenizeOnSpace(inputstring);
+			tokenizedInput = tokenizeOnSpace(inputstring);
             if (tokenizedInput.size() != 2)
                 break;
             if (tokenizedInput[0] == "equip") {
@@ -149,7 +149,7 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
             }
             break;
         case VIEW_INVENTORY_ARMORS:
-            cin >> inputstring;
+			std::getline(cin, inputstring);
             if (inputstring == "back") {
                 currentView = VIEW_INVENTORY;
                 break;
@@ -211,7 +211,7 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
             }
             break;
         case VIEW_INVENTORY_CONSUMABLES:
-            cin >> inputstring;
+			std::getline(cin, inputstring);
             if (inputstring == "back") {
                 currentView = VIEW_INVENTORY;
                 break;
@@ -239,7 +239,7 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
             }
             break;
         }
-        finished |= (limitOneAction && actions == 0);
+        finished |= (limitOneAction && actions != 0);
     }
     return actions != 0;
 }
@@ -330,7 +330,7 @@ int main() {
             }
             break;
         case' ':
-            browseInventory(*game, graphicDisplay, false, false);
+            browseInventory(*game, graphicDisplay, false, game->map.getTilePlayer() == MERCHANT);
             break;
         }
         if (newLocation.isValid() && oldLocation != newLocation) {

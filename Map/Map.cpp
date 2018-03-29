@@ -139,7 +139,7 @@ bool Map::generateLevel(int dLv, bool wrappingEnabled) {
     }*/
     std::string randomTiles;
     randomTiles += std::string(10, MONSTER | UNSEEN_TILE);
-    //randomTiles += std::string(2, MERCHANT | UNSEEN_TILE);
+    randomTiles += std::string(1, MERCHANT | UNSEEN_TILE);
     //randomTiles += std::string(1, WARP | UNSEEN_TILE);
     //randomTiles += std::string(5, TRAP | UNSEEN_TILE);
     //randomTiles += std::string(1, LOOT | UNSEEN_TILE);
