@@ -14,6 +14,7 @@ enum VIEW {
     VIEW_INVENTORY_WEAPONS,
     VIEW_INVENTORY_ARMORS,
     VIEW_INVENTORY_CONSUMABLES,
+    VIEW_CONSUMABLES_LIST,
     VIEW_COMBAT
 };
 
@@ -34,6 +35,7 @@ private:
     void printInventory_Weapons(bool merchant);
     void printInventory_Armors(bool merchant);
     void printInventory_Consumables(bool merchant);
+    void printConsumablesList();
     void show(VIEW view, std::shared_ptr<Entity> entity, bool merchant);
 public:
     Graphics(Game& game) : game(game), combatTextCount(0) {}

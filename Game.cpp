@@ -63,7 +63,7 @@ Game::Game(std::string playerName, EntityStats playerStats)
     weaponNames.push_back("Rusty Axe");
     weaponNames.push_back("Chipped Sword");
     weaponNames.push_back("Antique Dagger");
-    weaponNames.push_back("Dull cClaymore");
+    weaponNames.push_back("Dull Claymore");
     weaponNames.push_back("Broken Mace");
     weaponNames.push_back("Slime's Bone");
 

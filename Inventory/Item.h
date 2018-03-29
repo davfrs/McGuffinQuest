@@ -89,11 +89,11 @@ namespace Inventory {
                 : Item(ItemType::Weapon, name, worth), power(power) {
         }
 
-        int getPower() {
+        int getPower() const {
             return this->power;
         }
         std::ostream& print(std::ostream& out) const {
-            return Item::print(out) << " (" << std::to_string(this->getBaseWorth());
+            return Item::print(out) << " (+" << this->getPower() << ")   (" << std::to_string(this->getBaseWorth()) << MONEYNAME << ')';
         }
     };
 
@@ -104,11 +104,11 @@ namespace Inventory {
                 : Item(ItemType::Armor, name, worth), power(power) {
         }
 
-        int getPower() {
+        int getPower() const {
             return this->power;
         }
         std::ostream& print(std::ostream& out) const {
-            return Item::print(out) << " (" << std::to_string(this->getBaseWorth());
+            return Item::print(out) << " (+" << this->getPower() << ")   (" << std::to_string(this->getBaseWorth()) << MONEYNAME << ')';
         }
     };
 

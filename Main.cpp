@@ -216,14 +216,20 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                 currentView = VIEW_INVENTORY;
                 break;
             }
-            tokenizedInput = tokenizeOnSpace(inputstring);
-            if (tokenizedInput.size() != 2)
-                break;
-            if (tokenizedInput[0] == "use") {
+            if (inputstring == "list") {
+                graphicDisplay.show(VIEW::VIEW_CONSUMABLES_LIST);
+                cout << "(press any key to return to Consumables Menu)";
+                getCharInput();
                 break;
             }
-            if (tokenizedInput[0] == "drop") {
-                break;
+            tokenizedInput = tokenizeOnSpace(inputstring);
+            if (tokenizedInput.size() == 2) {
+                if (tokenizedInput[0] == "use") {
+                    break;
+                }
+                if (tokenizedInput[0] == "drop") {
+                    break;
+                }
             }
             if (tokenizedInput[0] == "buy" && merchant) {
                 break;

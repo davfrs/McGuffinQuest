@@ -32,6 +32,13 @@ public:
     std::shared_ptr<Entity> generateRandomEnemy(int floorLevel);
     std::shared_ptr<Inventory::ArmorItem> generateArmor(int power);
     std::shared_ptr<Inventory::WeaponItem> generateWeapon(int power);
+    std::vector<std::shared_ptr<Inventory::ConsumableItem>> getConsumables() {
+        std::vector<std::shared_ptr<Inventory::ConsumableItem>> list;
+        for (auto e : this->consumables) {
+            list.push_back(e.second);
+        }
+        return list;
+    }
 };
 
 #endif
