@@ -189,6 +189,8 @@ std::string Graphics::printSideInfo(int line, Entity& entity, std::string typeNa
         return std::to_string(inv.getOtherArmors().size()) + " other armors";
     case 15:
         return std::to_string(inv.getConsumables().size()) + " consumables";
+    case 16:
+        return std::to_string(inv.getCurrentInventoryUsage()) + '/' + std::to_string(inv.getInventoryCapacity()) + " inactive inventory usage";
     default:
         return "";
         /*int itemNumber = line - 10;
