@@ -110,7 +110,7 @@ namespace Inventory {
             if (this->hasActiveWeapon())
                 buff << *this->getCurrentWeapon() << " (+" << this->getCurrentWeapon()->getPower() << ')';
             else
-                buff << "no active weapon";
+                return "no active weapon";
             return buff.str();
         }
         std::string getCurrentArmorString() {

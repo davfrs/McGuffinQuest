@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include <functional>
+#include <sstream>
 
 namespace Inventory {
     const std::string MONEYNAME("gold");
@@ -39,7 +40,11 @@ namespace Inventory {
         friend std::ostream& operator<<(std::ostream& out, const Item& item) {
             return item.print(out);
         }
-
+        std::string printToString() const {
+            std::stringstream buff;
+            buff << *this;
+            return buff.str();
+        }
         virtual std::ostream& print(std::ostream& out) const {
             return out << this->displayName;
         }
@@ -69,7 +74,7 @@ namespace Inventory {
             this->worth = worth;
         }
 
-        virtual std::ostream& print(std::ostream& out) const {
+        std::ostream& print(std::ostream& out) const {
             out << std::to_string(this->getWorth());
             out << std::string(" ");
             out << this->getName();
@@ -87,6 +92,9 @@ namespace Inventory {
         int getPower() {
             return this->power;
         }
+        std::ostream& print(std::ostream& out) const {
+            return Item::print(out) << " (" << std::to_string(this->getBaseWorth());
+        }
     };
 
     class ArmorItem : public Item {
@@ -98,6 +106,9 @@ namespace Inventory {
 
         int getPower() {
             return this->power;
+        }
+        std::ostream& print(std::ostream& out) const {
+            return Item::print(out) << " (" << std::to_string(this->getBaseWorth());
         }
     };
 

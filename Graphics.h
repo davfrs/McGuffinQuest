@@ -31,9 +31,9 @@ private:
     std::string printSideInfo(int line, Entity& entity, std::string typeName);
 
     void printInventory_Base();
-    void printInventory_Weapons();
-    void printInventory_Armors();
-    void printInventory_Consumables();
+    void printInventory_Weapons(bool merchant);
+    void printInventory_Armors(bool merchant);
+    void printInventory_Consumables(bool merchant);
     void show(VIEW view, std::shared_ptr<Entity> entity, bool merchant);
 public:
     Graphics(Game& game) : game(game), combatTextCount(0) {}
