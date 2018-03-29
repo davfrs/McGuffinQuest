@@ -56,6 +56,26 @@ shared_ptr<Game> pregame() {
     clearKeyboard();
     return game;
 }
+bool confirmPurchase(Game& game, unsigned long price) {
+    cout << "This would cost " << price << Inventory::MONEYNAME;
+    if (game.player.getInv().getHeldMoney() < price) {
+        cout << "... which you don't have. (press any key to cancel)";
+        getCharInput();
+        return false;
+    }
+    cout << ". Are you sure you want to purchase this? (y or 1 for yes, n or 2 for no)";
+    while (true) {
+        char in = getCharInput();
+        switch (in) {
+        case 'y':
+        case '1':
+            return true;
+        case 'n':
+        case '2':
+            return false;
+        }
+    }
+}
 bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, bool merchant) {
     std::cout << std::string(50, '\n');
     VIEW currentView = VIEW_INVENTORY;
@@ -66,10 +86,12 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
         string inputstring;
         std::vector<string> tokenizedInput;
         std::shared_ptr<Inventory::Item> item;
+        std::shared_ptr<Inventory::ConsumableItem> consumable;
         int number = 0;
+        int number2 = 0;
         char input = 0;
         switch (currentView) {
-        case VIEW_INVENTORY:
+        case VIEW_INVENTORY: {
             input = getCharInput();
             switch (input) {
             case '1':
@@ -85,14 +107,14 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                 finished = true;
                 break;
             }
-            break;
-        case VIEW_INVENTORY_WEAPONS:
-			std::getline(cin, inputstring);
+            break;}
+        case VIEW_INVENTORY_WEAPONS:{
+            std::getline(cin, inputstring);
             if (inputstring == "back") {
                 currentView = VIEW_INVENTORY;
                 break;
             }
-			tokenizedInput = tokenizeOnSpace(inputstring);
+            tokenizedInput = tokenizeOnSpace(inputstring);
             if (tokenizedInput.size() != 2)
                 break;
             if (tokenizedInput[0] == "equip") {
@@ -127,11 +149,16 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                     break;
                 }
                 item = game.generateWeapon(number);
-                
+                if (confirmPurchase(game, item->getBaseWorth())) {
+                    if (game.player.getInv().addIfPossible(item) == nullptr) {
+                        game.player.getInv().removeMoney(item->getBaseWorth());
+                        actions++;
+                    }
+                }
                 break;
             }
             if (tokenizedInput[0] == "sell" && merchant) {
-                if (tokenizedInput[0] == "active" && game.player.getInv().hasActiveWeapon()) {
+                if (tokenizedInput[1] == "active" && game.player.getInv().hasActiveWeapon()) {
                     game.player.getInv().addMoney(game.player.getInv().removeCurrentWeapon()->getBaseWorth());
                     actions++;
                     break;
@@ -147,9 +174,9 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                 }
                 break;
             }
-            break;
-        case VIEW_INVENTORY_ARMORS:
-			std::getline(cin, inputstring);
+            break;}
+        case VIEW_INVENTORY_ARMORS: {
+            std::getline(cin, inputstring);
             if (inputstring == "back") {
                 currentView = VIEW_INVENTORY;
                 break;
@@ -189,11 +216,16 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                     break;
                 }
                 item = game.generateArmor(number);
-                
+                if (confirmPurchase(game, item->getBaseWorth())) {
+                    if (game.player.getInv().addIfPossible(item) == nullptr) {
+                        game.player.getInv().removeMoney(item->getBaseWorth());
+                        actions++;
+                    }
+                }
                 break;
             }
             if (tokenizedInput[0] == "sell" && merchant) {
-                if (tokenizedInput[0] == "active" && game.player.getInv().hasActiveArmor()) {
+                if (tokenizedInput[1] == "active" && game.player.getInv().hasActiveArmor()) {
                     game.player.getInv().addMoney(game.player.getInv().removeCurrentArmor()->getBaseWorth());
                     actions++;
                     break;
@@ -209,9 +241,9 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                 }
                 break;
             }
-            break;
-        case VIEW_INVENTORY_CONSUMABLES:
-			std::getline(cin, inputstring);
+            break;}
+        case VIEW_INVENTORY_CONSUMABLES: {
+            std::getline(cin, inputstring);
             if (inputstring == "back") {
                 currentView = VIEW_INVENTORY;
                 break;
@@ -224,20 +256,56 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
             }
             tokenizedInput = tokenizeOnSpace(inputstring);
             if (tokenizedInput.size() == 2) {
+                try {
+                    number = std::stoi(tokenizedInput[1]);
+                } catch (invalid_argument& e) {
+                    break;
+                }
                 if (tokenizedInput[0] == "use") {
+                    if (game.player.getInv().useConsumable(number-1) == Inventory::AttemptedUseStates::Used) {
+                        actions++;
+                    }
                     break;
                 }
                 if (tokenizedInput[0] == "drop") {
+                    game.player.getInv().removeConsumable(number);
                     break;
                 }
             }
-            if (tokenizedInput[0] == "buy" && merchant) {
-                break;
+            else if (tokenizedInput.size() == 3) {
+                if (tokenizedInput[0] == "buy" && merchant) {
+                    if ((consumable = game.getConsumableItem(tokenizedInput[1])) == nullptr)
+                        break;
+                    try {
+                        number2 = std::stoi(tokenizedInput[2]);
+                    } catch (invalid_argument& e) {
+                        break;
+                    }
+                    consumable->setUses(number2);
+                    if (confirmPurchase(game, consumable->getCount() * (unsigned long)consumable->getBaseWorth())) {
+                        if (game.player.getInv().addIfPossible(consumable) == nullptr) {
+                            game.player.getInv().removeMoney(consumable->getCount() * (unsigned long)consumable->getBaseWorth());
+                            actions++;
+                        }
+                    }
+                    break;
+                }
+                if (tokenizedInput[0] == "sell" && merchant) {
+                    try {
+                        number = std::stoi(tokenizedInput[1]);
+                        number2 = std::stoi(tokenizedInput[2]);
+                    } catch (invalid_argument& e) {
+                        break;
+                    }
+                    if (consumable = game.player.getInv().removeConsumable(number - 1, number2)) {
+                        game.player.getInv().addMoney(consumable->getCount() * (unsigned long)consumable->getBaseWorth());
+                        actions++;
+                    }
+                    break;
+                }
             }
-            if (tokenizedInput[0] == "sell" && merchant) {
-                break;
-            }
-            break;
+
+            break;}
         }
         finished |= (limitOneAction && actions != 0);
     }

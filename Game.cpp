@@ -54,10 +54,6 @@ bool useAround(Game& game, COORDINATE3 location, std::function<bool(Game&, COORD
 
 Game::Game(std::string playerName, EntityStats playerStats)
         : player(playerName, playerStats), map(), cheatMode(playerName == CHEATMODE_NAME){
-    if (cheatMode) {
-        //we don't want to go all the way to the top floor
-        this->map.__setTile({ 0, 0, 0 }, GOALPOINT | UNSEEN_TILE);
-    }
     enemyNames.push_back("Slime");
     enemyNames.push_back("Goblin");
     enemyNames.push_back("Spider");
@@ -87,6 +83,22 @@ Game::Game(std::string playerName, EntityStats playerStats)
     potion->setUses(2);
     player.getInv().addIfPossible(potion);
     player.getInv().addIfPossible(this->getConsumableItem(MEGATORCH_NAME));
+
+    if (cheatMode) {
+        //we don't want to go all the way to the top floor
+        this->map.__setTile({ 0, 0, 0 }, GOALPOINT | UNSEEN_TILE);
+        auto torch2 = std::shared_ptr<Inventory::ConsumableItem>(new Inventory::ConsumableItem_Lambda([this]() { 
+            bool r = false;
+            for (int x = 0; x < MAP_X_SIZE; x++) {
+                for (int y = 0; y < MAP_Y_SIZE; y++) {
+                    r |= torchLogic(*this, { x,y,this->map.playerLocation().Z() });
+                }
+            }
+            return r;
+        }, "godtorch", "Reveals the ENTIRE floor! (cheat item)", 0));
+        torch2->setUses(2);
+        player.getInv().addIfPossible(torch2);
+    }
 }
 void Game::registerConsumable(std::shared_ptr<Inventory::ConsumableItem> consumable) {
     consumables.emplace(consumable->getName(), consumable);

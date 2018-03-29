@@ -17,14 +17,14 @@ bool Map::generateLevel(int dLv, bool wrappingEnabled) {
     COORDINATE2 PS = this->playerLocation().toCOORDINATE2();
     COORDINATE2 PU, PD;
     PU.XCo = PU.YCo = PD.XCo = PD.YCo = 0;
-    while (PU == PD || PS == PU) {
-        PU.XCo = rand() % MAP_X_SIZE;
-        PU.YCo = rand() % MAP_Y_SIZE;
+    while (PU == PD || PS == PD) {
+        PD.XCo = rand() % MAP_X_SIZE;
+        PD.YCo = rand() % MAP_Y_SIZE;
         if (dLv == 0) {
-            PD.XCo = rand() % MAP_X_SIZE;
-            PD.YCo = rand() % MAP_Y_SIZE;
+            PU.XCo = rand() % MAP_X_SIZE;
+            PU.YCo = rand() % MAP_Y_SIZE;
         } else {
-            PD = PS;
+            PU = PS;
         }
     }
 
@@ -38,7 +38,7 @@ bool Map::generateLevel(int dLv, bool wrappingEnabled) {
         dungeon[PD.XCo][PD.YCo][dLv] = GOALPOINT | UNSEEN_TILE;
     }
     if (dLv != 0) {
-        dungeon[PU.XCo][PU.YCo][dLv] = GO_HIGHER;
+        dungeon[PU.XCo][PU.YCo][dLv] = GO_HIGHER | UNSEEN_TILE;
     }
     /*
     int cX;
