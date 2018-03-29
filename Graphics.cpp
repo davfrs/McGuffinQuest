@@ -1,10 +1,13 @@
 #include "Graphics.h"
 #include <iomanip>
 
-void Graphics::redrawMap() {
-    int z = game.map.playerLocation().Z();
-    
+void Graphics::clearScreen() {
     std::cout << std::string(50, '\n');
+}
+
+void Graphics::drawMap(bool merchant = false) {
+    clearScreen();
+    int z = game.map.playerLocation().Z();
     
     for (int y = 0; y <= MAP_Y_SIZE + 1; y++) {
         std::cout << ']';
@@ -17,12 +20,16 @@ void Graphics::redrawMap() {
         std::cout << "[  " << printSideInfo(y, game.player, "PLAYER") << std::endl;
     }
     std::cout << std::endl;
+    if (merchant)
+        std::cout << "You discovered a wandering merchant! press e to trade" << std::endl;
+    
 }
 
 void Graphics::drawCombat(Entity &enemy) {
+    clearScreen();
+    
     std::ios oldState(nullptr);
     oldState.copyfmt(std::cout);
-    std::cout << std::string(50, '\n');
     
     for (int y = 0; y <= MAP_Y_SIZE + 1; y++) {
         std::cout << std::string(10, ' ');
@@ -55,9 +62,10 @@ void Graphics::clearCombatText() {
 }
 
 void Graphics::printInventory_Base() {
+    clearScreen();
+    
     std::ios oldState(nullptr);
     oldState.copyfmt(std::cout);
-    std::cout << std::string(50, '\n');
     std::string menu[]{"Inventory Menu", "1: Weapons", "2: Armors", "3: Consumables", "4: Back", ""};
     int menuItems = 6;
     for (int y = 0; y <= MAP_Y_SIZE + 1; y++) {
@@ -69,9 +77,10 @@ void Graphics::printInventory_Base() {
 }
 
 void Graphics::printInventory_Weapons(bool merchant) {
+    clearScreen();
+    
     std::ios oldState(nullptr);
     oldState.copyfmt(std::cout);
-    std::cout << std::string(50, '\n');
     std::string menu[]{"Weapons Menu", "options: equip [#], drop [active/#],", ""};
     if (merchant)
         menu[1] += " buy [power], sell [#]";
@@ -79,16 +88,21 @@ void Graphics::printInventory_Weapons(bool merchant) {
     int menuItems = 3;
     for (unsigned int y = 0; y <= MAP_Y_SIZE + 1; y++) {
         std::cout << std::string(10, ' ');
-        std::cout << std::setw(MAP_X_SIZE + 3 - 10) << std::left << (y < menuItems ? menu[y] : (y == menuItems ? game.player.getInv().getCurrentWeaponString() : (y - menuItems <= game.player.getInv().getOtherWeapons().size() ? (std::to_string(y - menuItems) + ": ") + game.player.getInv().getOtherWeapons()[y - menuItems - 1]->printToString() : "")));
+        std::cout << std::setw(MAP_X_SIZE + 3 - 10) << std::left
+                  << (y < menuItems ? menu[y] : (y == menuItems ? game.player.getInv().getCurrentWeaponString() : (
+                          y - menuItems <= game.player.getInv().getOtherWeapons().size() ?
+                          (std::to_string(y - menuItems) + ": ") +
+                          game.player.getInv().getOtherWeapons()[y - menuItems - 1]->printToString() : "")));
         std::cout.copyfmt(oldState);
         std::cout << printSideInfo(y, game.player, "PLAYER") << std::endl;
     }
 }
 
 void Graphics::printInventory_Armors(bool merchant) {
+    clearScreen();
+    
     std::ios oldState(nullptr);
     oldState.copyfmt(std::cout);
-    std::cout << std::string(50, '\n');
     std::string menu[]{"Armors Menu", "options: equip [#], drop [active/#],", ""};
     if (merchant)
         menu[1] += " buy [power], sell [#]";
@@ -96,16 +110,20 @@ void Graphics::printInventory_Armors(bool merchant) {
     int menuItems = 3;
     for (int y = 0; y <= MAP_Y_SIZE + 1; y++) {
         std::cout << std::string(10, ' ');
-        std::cout << std::setw(MAP_X_SIZE + 3 - 10) << std::left << (y < menuItems ? menu[y] : (y == menuItems ? game.player.getInv().getCurrentArmorString() : (y - menuItems <= game.player.getInv().getOtherArmors().size() ? (std::to_string(y - menuItems) + ": ") + game.player.getInv().getOtherArmors()[y - menuItems - 1]->printToString() : "")));
+        std::cout << std::setw(MAP_X_SIZE + 3 - 10) << std::left
+                  << (y < menuItems ? menu[y] : (y == menuItems ? game.player.getInv().getCurrentArmorString() : (
+                          y - menuItems <= game.player.getInv().getOtherArmors().size() ?
+                          (std::to_string(y - menuItems) + ": ") +
+                          game.player.getInv().getOtherArmors()[y - menuItems - 1]->printToString() : "")));
         std::cout.copyfmt(oldState);
         std::cout << printSideInfo(y, game.player, "PLAYER") << std::endl;
     }
 }
 
 void Graphics::printInventory_Consumables(bool merchant) {
+    clearScreen();
     std::ios oldState(nullptr);
     oldState.copyfmt(std::cout);
-    std::cout << std::string(50, '\n');
     std::string menu[]{"Consumables Menu", "options: use [#], drop [#],", ""};
     if (merchant)
         menu[1] += " buy [name] [count], sell [#]";
@@ -113,24 +131,28 @@ void Graphics::printInventory_Consumables(bool merchant) {
     int menuItems = 3;
     for (int y = 0; y <= MAP_Y_SIZE + 1; y++) {
         std::cout << std::string(10, ' ');
-        std::cout << std::setw(MAP_X_SIZE + 3 - 10) << std::left << (y < menuItems ? menu[y] : (y - menuItems - 1 < game.player.getInv().getConsumables().size() ? (std::to_string(y - menuItems) + ": ") + game.player.getInv().getConsumables()[y - menuItems - 1]->printToString() : ""));
+        std::cout << std::setw(MAP_X_SIZE + 3 - 10) << std::left
+                  << (y < menuItems ? menu[y] : (y - menuItems - 1 < game.player.getInv().getConsumables().size() ?
+                                                 (std::to_string(y - menuItems) + ": ") +
+                                                 game.player.getInv().getConsumables()[y - menuItems -
+                                                                                       1]->printToString() : ""));
         std::cout.copyfmt(oldState);
         std::cout << printSideInfo(y, game.player, "PLAYER") << std::endl;
     }
 }
 
 void Graphics::printConsumablesList() {
+    clearScreen();
     auto list = game.getConsumables();
-    std::cout << std::string(50, '\n');
     for (auto e : list) {
         std::cout << e->getName() << " (" << e->getBaseWorth() << " each) - " << e->getDescription() << std::endl;
     }
 }
 
-void Graphics::show(VIEW view, std::shared_ptr<Entity> entity, bool merchant) {
+void Graphics::show(VIEW view, std::shared_ptr<Entity> entity, bool merchant = false) {
     switch (view) {
     case VIEW_MAP:
-        redrawMap();
+        drawMap(merchant);
         break;
     case VIEW_INVENTORY:
         printInventory_Base();
@@ -199,11 +221,9 @@ std::string Graphics::printSideInfo(int line, Entity &entity, std::string typeNa
     case 15:
         return typeName == "PLAYER" ? std::to_string(inv.getConsumables().size()) + " consumables" : "";
     case 16:
-        return typeName == "PLAYER" ? std::to_string(inv.getCurrentInventoryUsage()) + '/' + std::to_string(inv.getInventoryCapacity()) + " inactive inventory usage" : "";
+        return typeName == "PLAYER" ? std::to_string(inv.getCurrentInventoryUsage()) + '/' +
+                                      std::to_string(inv.getInventoryCapacity()) + " inactive inventory usage" : "";
     default:
         return "";
-        /*int itemNumber = line - 10;
-        // TODO: get player's items and display their name
-        return itemNumber < 10 ? "<item " + std::to_string(itemNumber) + '>' : "";*/
     }
 }

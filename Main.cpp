@@ -28,7 +28,7 @@ void clearKeyboard() {
 
 void waitForKeyboard() {
     clearKeyboard();
-    cout << "Press any key to continue...";
+    cout << "Press any key to continue..." << endl;
     
     while (!__kbhit());
 }
@@ -396,7 +396,7 @@ int main() {
     shared_ptr<Game> game = pregame();
     Graphics graphicDisplay(*game);
     do {
-        graphicDisplay.show(VIEW::VIEW_MAP);
+        graphicDisplay.show(VIEW::VIEW_MAP, game->map.getTilePlayer() == MERCHANT);
         COORDINATE3 oldLocation = game->map.playerLocation();
         COORDINATE3 newLocation = oldLocation;
         cout << "Move with '" << static_cast<char>(CHAR_UP) << static_cast<char>(CHAR_LEFT ) << static_cast<char>(CHAR_DOWN ) << static_cast<char>(CHAR_RIGHT ) << "'. Press '" << static_cast<char>(CHAR_ACTION ) << "' to perform action or '" << static_cast<char>(CHAR_INVENTORY) << "' to view inventory." << endl;
@@ -457,7 +457,6 @@ int main() {
                 
                 break;
             case MERCHANT:
-                cout << "You discovered a wandering merchant! press e to trade" << endl;
                 break;
             }
         }

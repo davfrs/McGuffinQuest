@@ -25,7 +25,8 @@ private:
     std::string combatText[combatTextAreaLineCount];
     int combatTextCount;
 
-    void redrawMap();
+    void clearScreen();
+    void drawMap(bool merchant);
 
     void drawCombat(Entity& enemy);
 
