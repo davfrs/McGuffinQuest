@@ -81,7 +81,7 @@ void postGame(bool win, const string &name) {
     else {
         cout << "You find yourself unable to move. You expected more pain, but the adrenaline in your body numbs it... " << endl;
         cout << "                                                                                                     for now." << endl;
-        cout << "Soon, monsters will wander into the room where you lie, drawn by the smell of blood, but you will already be dead. " << endl;
+        cout << "Soon, monsters will pour into the room where you lie, drawn by the smell of blood, but you will already be dead. " << endl;
         cout << "\"I thought I was better than this...\" you tell yourself. " << endl;
         cout << "You were wrong, " << name << endl;
     }

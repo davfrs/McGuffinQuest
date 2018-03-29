@@ -1,0 +1,14 @@
+Style Guidelines:
+ 1. English is to be the only spoken language used in the code.
+ 2. Indentations are to be done using 4 spaces. Tabs are not allowed.
+ 3. When incrementing/decrementing a variable on a seperate line, it must be done using postfix operators.
+ 4. Braces are not required after loops or conditionals when only one statement would be in the braces. Using them in such a case is allowed, however.
+ 5. When using braces to accompany a loop or conditional, as well as a method/function body, the opening brace goes on the same line as the controlling loop/conditional, or definition of the method/function.
+ 6. End braces go on a seperate line all by themselves, unless used for ending a lambda that contains a single statement, or for try-catch blocks.
+ 7. When using exception handling, opening braces go on the same line as the try /catch declaration. Closing braces go on the same line as the following catch block, if one exists. Opening and closing braces must be on different lines for exception handling.
+ 8. When using a for-each loop, the variable name is to be either "e" or "each". In the event there is a nested for-each loop, the inner loop will use the variable "e2" -- subsiquent inner for-each loops then increment the number after the e.
+ 9. The names of variables are to be done in "camelCase" style.
+10. The names of structs, as well as struct-like classes, are to be full upper-case.
+11. Global constants and #defines are to be full upper-case. If the name needs to be more than one word, the two words are seperated by an underscore.
+12. The names of enums and non-struct-like classes are to start with an upper-case letter, followed by lower-case. If multiple words are used in the naming, each first letter of each word is upper-cased. ("CamelCase")
+13. When declaring methods with empty bodies, such as constuctors that only use member initialization lists, the start and end braces can be on the same line, with no more than 1 space between them.

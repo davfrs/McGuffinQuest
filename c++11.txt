@@ -1,0 +1,13 @@
+C++11 Features Used:
+1. lambdas
+2. brace initialization
+3. auto
+4. deleted functions/methods
+5. nullptr
+6. delegating constructors
+7. tuples
+8. smart pointers
+
+STL Containers Used:
+1. vector
+2. map
