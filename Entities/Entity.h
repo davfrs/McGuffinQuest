@@ -2,8 +2,8 @@
 #define ENTITY
 
 #include <string>
-#include "Inventory/Inventory.h"
-#include "Map/Map.h"
+#include "../Inventory/Inventory.h"
+#include "../Map/Map.h"
 
 #define STARTING_INVENTORY_CAPACITY 8
 

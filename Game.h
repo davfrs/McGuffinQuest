@@ -6,10 +6,10 @@
 #include <map>
 #include <vector>
 
-#include "Consumables.h"
+#include "Inventory/Consumables.h"
 #include "Map/Map.h"
-#include "Entity.h"
-#include "Player.h"
+#include "Entities/Entity.h"
+#include "Entities/Player.h"
 
 const std::string CHEATMODE_NAME("Joe Bentley");
 
