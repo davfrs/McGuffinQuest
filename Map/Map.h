@@ -173,6 +173,7 @@ public:
     void warpToNextDeaperLevel() {
         this->playerSpace = this->playerSpace.incrementZ();
         this->generateLevel(this->playerSpace.Z());
+        this->revealSquare(this->playerSpace);
     }
     void warpUpALevel() {
         this->playerSpace = this->playerSpace.decrementZ();

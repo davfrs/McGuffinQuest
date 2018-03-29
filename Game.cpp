@@ -52,12 +52,7 @@ bool useAround(Game& game, COORDINATE3 location, std::function<bool(Game&, COORD
 }
 
 
-Game::Game(std::string playerName, EntityStats playerStats)
-        : player(playerName, playerStats), map(), cheatMode(playerName == CHEATMODE_NAME){
-    if (cheatMode) {
-        //we don't want to go all the way to the top floor
-        this->map.__setTile({ 0, 0, 0 }, GOALPOINT | UNSEEN_TILE);
-    }
+Game::Game(std::string playerName, ENTITYSTATS playerStats) : player(playerName, playerStats), map(), cheatMode(playerName == CHEATMODE_NAME){
     enemyNames.push_back("Slime");
     enemyNames.push_back("Goblin");
     enemyNames.push_back("Spider");
@@ -75,7 +70,8 @@ Game::Game(std::string playerName, EntityStats playerStats)
     weaponNames.push_back("Slime's Bone");
 
     armorNames.push_back("Old Chainmail");
-    armorNames.push_back("Beautiful Cloth");
+    armorNames.push_back("Silk Shrit");
+    armorNames.push_back("Fur Loincloth");
 
     registerConsumable(std::shared_ptr<Inventory::ConsumableItem>(new Inventory::ConsumableItem_Lambda([this]() { return useAround(*this, this->map.playerLocation(),*torchLogic); }, TORCH_NAME, TORCH_DESC, TORCH_WORTH)));
     registerConsumable(std::shared_ptr<Inventory::ConsumableItem>(new Inventory::ConsumableItem_Lambda([this]() { return useAround(*this, this->map.playerLocation(), [](Game& game,COORDINATE3 location) { return useAround(game, location, *torchLogic); }); }, SUPERTORCH_NAME, SUPERTORCH_DESC, SUPERTORCH_WORTH)));
@@ -87,6 +83,22 @@ Game::Game(std::string playerName, EntityStats playerStats)
     potion->setUses(2);
     player.getInv().addIfPossible(potion);
     player.getInv().addIfPossible(this->getConsumableItem(MEGATORCH_NAME));
+
+    if (cheatMode) {
+        //we don't want to go all the way to the top floor
+        this->map.__setTile({ 0, 0, 0 }, GOALPOINT | UNSEEN_TILE);
+        auto torch2 = std::shared_ptr<Inventory::ConsumableItem>(new Inventory::ConsumableItem_Lambda([this]() { 
+            bool r = false;
+            for (int x = 0; x < MAP_X_SIZE; x++) {
+                for (int y = 0; y < MAP_Y_SIZE; y++) {
+                    r |= torchLogic(*this, { x,y,this->map.playerLocation().Z() });
+                }
+            }
+            return r;
+        }, "godtorch", "Reveals the ENTIRE floor! (cheat item)", 0));
+        torch2->setUses(2);
+        player.getInv().addIfPossible(torch2);
+    }
 }
 void Game::registerConsumable(std::shared_ptr<Inventory::ConsumableItem> consumable) {
     consumables.emplace(consumable->getName(), consumable);
@@ -101,21 +113,22 @@ std::shared_ptr<Inventory::ConsumableItem> Game::getConsumableItem(const std::st
 }
 
 std::shared_ptr<Entity> Game::generateRandomEnemy(int floorLevel) {
-    EntityStats baseStats;
+    ENTITYSTATS baseStats;
     std::string name = this->enemyNames[rand() % this->enemyNames.size()];
+    floorLevel *= 3;
     //yes, I did just randomly come up with these equations.
     baseStats.HP = (rand() % (5 + 2 * floorLevel) + floorLevel) * 5 + 25;
     baseStats.defense = (rand() % (4 + floorLevel)) / 3 + 2 + floorLevel;
     baseStats.strength = (rand() % (8 + floorLevel)) / 3 + 5 + floorLevel;
-
+    
     std::shared_ptr<Entity> enemy(new Entity(name, baseStats));
     Inventory::InventoryData& inv = enemy->getInv();
 
-    inv.addMoney((rand() % (10 * floorLevel + 20)) + 5 * floorLevel + 20);
+    inv.addMoney((rand() % (10 * floorLevel + 20)) + 15 * floorLevel + 20);
 
     int p = rand() % (2 * floorLevel + 3) - floorLevel;
     if (p != 0) {
-        bool equipped = (rand() % (floorLevel + 1)) == 0;
+        bool equipped = (rand() % (floorLevel / 2 + 1)) == 0;
         if (p < 0) {
             p = -p;
         }
@@ -127,7 +140,7 @@ std::shared_ptr<Entity> Game::generateRandomEnemy(int floorLevel) {
 
     p = rand() % (2 * floorLevel + 3) - floorLevel;
     if (p != 0) {
-        bool equipped = (rand() % (floorLevel + 1)) == 0;
+        bool equipped = (rand() % (floorLevel / 2 + 1)) == 0;
         if (p < 0) {
             p = -p;
         }
