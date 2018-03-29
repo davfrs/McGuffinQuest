@@ -18,11 +18,11 @@ enum VIEW {
     VIEW_COMBAT
 };
 
-const int CombatText = 5;
+const int combatTextAreaLineCount = 5;
 class Graphics {
 private:
     Game& game;
-    std::string combatText[CombatText];
+    std::string combatText[combatTextAreaLineCount];
     int combatTextCount;
 
     void redrawMap();

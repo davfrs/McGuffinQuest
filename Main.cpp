@@ -5,27 +5,40 @@
 
 
 #include "Game.h"
-#include "Entity.h"
 #include "Graphics.h"
 #include "OSInputs.h"
 
 using namespace std;
 using namespace Inventory;
 
+enum MeaningfulCharPresses {
+    CHAR_UP = 'w',
+    CHAR_DOWN = 's',
+    CHAR_LEFT = 'a',
+    CHAR_RIGHT = 'd',
+    CHAR_ACTION = 'e',
+    CHAR_INVENTORY = ' '
+};
+
+// KEYBOARD INPUT STUFF
 void clearKeyboard() {
     while (__kbhit())
         __getch();
 }
+
 void waitForKeyboard() {
     clearKeyboard();
+    cout << "Press any key to continue...";
+    
     while (!__kbhit());
 }
+
 char getCharInput() {
     return __getch();
 }
 
 std::vector<string> tokenizeOnSpace(std::string input) {
-    std::vector <string> tokens;
+    std::vector<string> tokens;
     std::stringstream check1(input);
     std::string intermediate;
     while (std::getline(check1, intermediate, ' ')) {
@@ -34,6 +47,7 @@ std::vector<string> tokenizeOnSpace(std::string input) {
     return tokens;
 }
 
+// GAME SCREENS
 shared_ptr<Game> pregame() {
     cout << "You find yourself standing in front of a pair of wooden doors partially blocking what is obviously the entrance to a" << endl;
     cout << "massive cave system. An old man is in front of the doors, as if guarding it. While it is obvious that you could walk" << endl;
@@ -48,15 +62,32 @@ shared_ptr<Game> pregame() {
     cout << "You stare at the old man, obviously thinking his quest is lame, but gently shake your head and pass through the wood" << endl;
     cout << "doors regardless..." << endl;
     cin.clear();
-    shared_ptr<Game> game(new Game(name, { 100, 10, 4 }));
+    shared_ptr<Game> game(new Game(name, {100, 10, 4}));
     game->map.revealSquare(game->map.playerLocation());
     
-    cout << "Press any key to continue...";
     waitForKeyboard();
     clearKeyboard();
     return game;
 }
-bool confirmPurchase(Game& game, unsigned long price) {
+
+void postGame(bool win, const string &name) {
+    
+    if (win) {
+        cout << "In the middle of the room you just entered, you see a cardboard box with \"McGuffin\" scribbled on it in black marker." << endl;
+        cout << "You open the box, but aren't sure what you're looking at. Regardless, this must be the prize you were sent to retrieve." << endl;
+        cout << "You pick up the box, and walk back the way you came to the old man. He thanks you, but it hardly seems this quest was" << endl;
+        cout << "worth your time... (Press any key to close)" << endl;
+    }
+    else {
+        cout << "You find yourself unable to move. You expected more pain, but the adrenaline in your body numbs it... " << endl;
+        cout << "                                                                                                     for now." << endl;
+        cout << "Soon, monsters will wander into the room where you lie, drawn by the smell of blood, but you will already be dead. " << endl;
+        cout << "\"I thought I was better than this...\" you tell yourself. " << endl;
+        cout << "You were wrong, " << name << endl;
+    }
+}
+
+bool confirmPurchase(Game &game, unsigned long price) {
     cout << "This would cost " << price << Inventory::MONEYNAME;
     if (game.player.getInv().getHeldMoney() < price) {
         cout << "... which you don't have. (press any key to cancel)";
@@ -76,7 +107,8 @@ bool confirmPurchase(Game& game, unsigned long price) {
         }
     }
 }
-bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, bool merchant) {
+
+bool browseInventory(Game &game, Graphics &graphicDisplay, bool limitOneAction, bool merchant) {
     std::cout << std::string(50, '\n');
     VIEW currentView = VIEW_INVENTORY;
     int actions = 0;
@@ -108,8 +140,8 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                 break;
             }
             break;
-		}
-        case VIEW_INVENTORY_WEAPONS:{
+        }
+        case VIEW_INVENTORY_WEAPONS: {
             std::getline(cin, inputstring);
             if (inputstring == "back") {
                 currentView = VIEW_INVENTORY;
@@ -121,10 +153,10 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
             if (tokenizedInput[0] == "equip") {
                 try {
                     number = std::stoi(tokenizedInput[1]);
-                } catch (invalid_argument&) {
+                } catch (invalid_argument &) {
                     break;
                 }
-                if (game.player.getInv().swapActiveWeapon(number-1))
+                if (game.player.getInv().swapActiveWeapon(number - 1))
                     actions++;
                 break;
             }
@@ -136,17 +168,17 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                 }
                 try {
                     number = std::stoi(tokenizedInput[1]);
-                } catch (invalid_argument&) {
+                } catch (invalid_argument &) {
                     break;
                 }
                 if (game.player.getInv().removeWeapon(number - 1))
                     actions++;
                 break;
             }
-            if (tokenizedInput[0] == "buy" && merchant){
+            if (tokenizedInput[0] == "buy" && merchant) {
                 try {
                     number = std::stoi(tokenizedInput[1]);
-                } catch (invalid_argument&) {
+                } catch (invalid_argument &) {
                     break;
                 }
                 item = game.generateWeapon(number);
@@ -166,7 +198,7 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                 }
                 try {
                     number = std::stoi(tokenizedInput[1]);
-                } catch (invalid_argument&) {
+                } catch (invalid_argument &) {
                     break;
                 }
                 if (item = game.player.getInv().removeWeapon(number - 1)) {
@@ -176,7 +208,7 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                 break;
             }
             break;
-		}
+        }
         case VIEW_INVENTORY_ARMORS: {
             std::getline(cin, inputstring);
             if (inputstring == "back") {
@@ -189,7 +221,7 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
             if (tokenizedInput[0] == "equip") {
                 try {
                     number = std::stoi(tokenizedInput[1]);
-                } catch (invalid_argument&) {
+                } catch (invalid_argument &) {
                     break;
                 }
                 if (game.player.getInv().swapActiveArmor(number - 1))
@@ -204,7 +236,7 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                 }
                 try {
                     number = std::stoi(tokenizedInput[1]);
-                } catch (invalid_argument&) {
+                } catch (invalid_argument &) {
                     break;
                 }
                 if (game.player.getInv().removeArmor(number - 1))
@@ -214,7 +246,7 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
             if (tokenizedInput[0] == "buy" && merchant) {
                 try {
                     number = std::stoi(tokenizedInput[1]);
-                } catch (invalid_argument&) {
+                } catch (invalid_argument &) {
                     break;
                 }
                 item = game.generateArmor(number);
@@ -234,7 +266,7 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                 }
                 try {
                     number = std::stoi(tokenizedInput[1]);
-                } catch (invalid_argument&) {
+                } catch (invalid_argument &) {
                     break;
                 }
                 if (item = game.player.getInv().removeArmor(number - 1)) {
@@ -244,7 +276,7 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                 break;
             }
             break;
-		}
+        }
         case VIEW_INVENTORY_CONSUMABLES: {
             std::getline(cin, inputstring);
             if (inputstring == "back") {
@@ -261,11 +293,11 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
             if (tokenizedInput.size() == 2) {
                 try {
                     number = std::stoi(tokenizedInput[1]);
-                } catch (invalid_argument&) {
+                } catch (invalid_argument &) {
                     break;
                 }
                 if (tokenizedInput[0] == "use") {
-                    if (game.player.getInv().useConsumable(number-1) == Inventory::AttemptedUseStates::Used) {
+                    if (game.player.getInv().useConsumable(number - 1) == Inventory::AttemptedUseStates::Used) {
                         actions++;
                     }
                     break;
@@ -281,13 +313,13 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                         break;
                     try {
                         number2 = std::stoi(tokenizedInput[2]);
-                    } catch (invalid_argument&) {
+                    } catch (invalid_argument &) {
                         break;
                     }
                     consumable->setUses(number2);
-                    if (confirmPurchase(game, consumable->getCount() * (unsigned long)consumable->getBaseWorth())) {
+                    if (confirmPurchase(game, consumable->getCount() * (unsigned long) consumable->getBaseWorth())) {
                         if (game.player.getInv().addIfPossible(consumable) == nullptr) {
-                            game.player.getInv().removeMoney(consumable->getCount() * (unsigned long)consumable->getBaseWorth());
+                            game.player.getInv().removeMoney(consumable->getCount() * (unsigned long) consumable->getBaseWorth());
                             actions++;
                         }
                     }
@@ -297,44 +329,47 @@ bool browseInventory(Game& game, Graphics& graphicDisplay, bool limitOneAction, 
                     try {
                         number = std::stoi(tokenizedInput[1]);
                         number2 = std::stoi(tokenizedInput[2]);
-                    } catch (invalid_argument&) {
+                    } catch (invalid_argument &) {
                         break;
                     }
                     if (consumable = game.player.getInv().removeConsumable(number - 1, number2)) {
-                        game.player.getInv().addMoney(consumable->getCount() * (unsigned long)consumable->getBaseWorth());
+                        game.player.getInv().addMoney(consumable->getCount() * (unsigned long) consumable->getBaseWorth());
                         actions++;
                     }
                     break;
                 }
             }
-
+            
             break;
-		}
+        }
         }
         finished |= (limitOneAction && actions != 0);
     }
     return actions != 0;
 }
-void enemyEncounter(Game& game, Graphics& graphicDisplay) {
-    shared_ptr<Entity>enemy = game.generateRandomEnemy(game.map.playerLocation().Z());
+
+void enemyEncounter(Game &game, Graphics &graphicDisplay) {
+    shared_ptr<Entity> enemy = game.generateRandomEnemy(game.map.playerLocation().Z());
     int attack;
     int defense;
     bool kill;
     graphicDisplay.clearCombatText();
-    graphicDisplay.addCombatText("A " + enemy->getName() +" was in the room you entered!");
+    graphicDisplay.addCombatText("A " + enemy->getName() + " was in the room you entered!");
     while (game.player.getCurrentHP() > 0 && enemy->getCurrentHP() > 0) {
+        graphicDisplay.addCombatText("Press e to attack or (space) to view inventory");
         graphicDisplay.show(VIEW_COMBAT, enemy);
+        getCharInput(); // not sure why
         char input = getCharInput();
         switch (input) {
-        case' ':
+        case ' ':
             if (browseInventory(game, graphicDisplay, true, false)) {
                 tie<int, int, bool>(attack, defense, kill) = enemy->attackEntity(game.player);
-                graphicDisplay.addCombatText("The enemy " + enemy->getName() + " attacked with " + std::to_string(attack) + " strength, but you blocked with " + std::to_string(defense) + " defense.");
+                graphicDisplay.addCombatText("The enemy " + enemy->getName() + " attacked with " + std::to_string(attack) + " strength, but you blocked with " + std::to_string(defense) + " defense. Damage taken: " + std::to_string(attack - defense));
             }
             break;
-        case'e':
+        case 'e':
             tie<int, int, bool>(attack, defense, kill) = game.player.attackEntity(*enemy);
-            graphicDisplay.addCombatText("You attacked with " + std::to_string(attack) + " strength, but the enemy " + enemy->getName() + " blocked with " + std::to_string(defense) + " defense.");
+            graphicDisplay.addCombatText("You attacked with " + std::to_string(attack) + " strength, but the enemy " + enemy->getName() + " blocked with " + std::to_string(defense) + " defense. Damage dealt: " + std::to_string(attack - defense));
             if (kill) {
                 graphicDisplay.addCombatText("You killed the enemy " + enemy->getName() + ". (Press any key to return to the map)");
                 graphicDisplay.show(VIEW_COMBAT, enemy);
@@ -343,9 +378,10 @@ void enemyEncounter(Game& game, Graphics& graphicDisplay) {
                 auto couldNotFit = game.player.getInv().addAsPossible(enemy->getInv().dropEverything());
                 //too bad for the items that wouldn't fit.
                 game.map.__setTile(game.map.playerLocation(), FLOOR);
-            } else {
+            }
+            else {
                 tie<int, int, bool>(attack, defense, kill) = enemy->attackEntity(game.player);
-                graphicDisplay.addCombatText("The enemy " + enemy->getName() + " attacked with " + std::to_string(attack) + " strength, but you blocked with " + std::to_string(defense) + " defense.");
+                graphicDisplay.addCombatText("The enemy " + enemy->getName() + " attacked with " + std::to_string(attack) + " strength, but you blocked with " + std::to_string(defense) + " defense. Damage taken: " + std::to_string(attack - defense));
             }
         }
     }
@@ -355,10 +391,6 @@ void enemyEncounter(Game& game, Graphics& graphicDisplay) {
     }
 }
 
-enum MeaningfulCharPresses {
-    CHAR_UP = 'w', CHAR_DOWN = 's', CHAR_LEFT = 'a', CHAR_RIGHT = 'd', CHAR_ACTION = 'e', CHAR_INVENTORY = ' '
-};
-
 int main() {
     srand(static_cast<unsigned int>(time(nullptr)));
     shared_ptr<Game> game = pregame();
@@ -367,6 +399,8 @@ int main() {
         graphicDisplay.show(VIEW::VIEW_MAP);
         COORDINATE3 oldLocation = game->map.playerLocation();
         COORDINATE3 newLocation = oldLocation;
+        cout << "Move with '" << static_cast<char>(CHAR_UP) << static_cast<char>(CHAR_LEFT ) << static_cast<char>(CHAR_DOWN ) << static_cast<char>(CHAR_RIGHT ) << "'. Press '" << static_cast<char>(CHAR_ACTION ) << "' to perform action or '" << static_cast<char>(CHAR_INVENTORY) << "' to view inventory." << endl;
+        
         char input = getCharInput();
         char tile = 0;
         switch (input) {
@@ -395,13 +429,13 @@ int main() {
                 browseInventory(*game, graphicDisplay, false, true);
                 break;
             case LOOT:
-
+                
                 break;
             case STATUE:
-
+                
                 break;
             case HEAL:
-
+                
                 break;
             }
             break;
@@ -417,28 +451,21 @@ int main() {
                 enemyEncounter(*game, graphicDisplay);
                 break;
             case TRAP:
-
+                
                 break;
             case WARP:
-
+                
+                break;
+            case MERCHANT:
+                cout << "You discovered a wandering merchant! press e to trade" << endl;
                 break;
             }
         }
     } while ((game->player.getCurrentHP() > 0) && game->map.getTilePlayer() != GOALPOINT);
-    graphicDisplay.show(VIEW::VIEW_MAP);
-    if (game->map.getTilePlayer() == GOALPOINT) {
-        cout << "In the middle of the room you just entered, you see a cardboard box with \"McGuffin\" scribbled on it in black marker." << endl;
-        cout << "You open the box, but aren't sure what you're looking at. Regardless, this must be the prize you were sent to retrieve." << endl;
-        cout << "You pick up the box, and walk back the way you came to the old man. He thanks you, but it hardly seems this quest was" << endl;
-        cout << "worth your time... (Press any key to close)" << endl;
-    }
-    else {
-        cout << "You find yourself unable to move. You expected more pain, but the adrenaline in your body numbs it... " << endl;
-        cout << "                                                                                                     for now." << endl;
-        cout << "Soon, monsters will wander into the room where you lie, drawn by the smell of blood, but you will already be dead. " << endl;
-        cout << "\"I thought I was better than this...\" you tell yourself. " << endl;
-        cout << "You were wrong, " << game->player.getName() << endl;
-        cout << "(Press any key to close)" << endl;
-    }
+    
+    graphicDisplay.show(VIEW_MAP);
+    
+    postGame(game->map.getTilePlayer() == GOALPOINT, game->player.getName());
+    
     waitForKeyboard();
 }

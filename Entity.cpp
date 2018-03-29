@@ -11,7 +11,7 @@ std::tuple<int, int, bool> Entity::attackEntity(Entity& other) {
     if (this->inv.hasActiveWeapon())
         damage += this->inv.getCurrentWeapon()->getPower();
     std::pair<int, bool> p = other.defendFromAttack(damage);
-    return { damage, p.first, p.second };
+    return std::tuple<int, int, bool>{ damage, p.first, p.second };
 }
 
 std::pair<int, bool> Entity::defendFromAttack(int damage) {
